@@ -25,12 +25,12 @@ int main(){
 
 	//Descomentar para testear el input
 
-	for(list<int*>::iterator it = allTheGames.begin(); it != allTheGames.end(); it++){
-		for(int i = 0; i < 5; i++){
-			cout << (*it)[i] << " ";
-		}
-		cout << "\n";
-	}
+	// for(list<int*>::iterator it = allTheGames.begin(); it != allTheGames.end(); it++){
+	// 	for(int i = 0; i < 5; i++){
+	// 		cout << (*it)[i] << " ";
+	// 	}
+	// 	cout << "\n";
+	// }
 
 	matriz matrix = matriz(equipos, equipos);
 
