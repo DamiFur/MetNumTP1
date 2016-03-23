@@ -20,6 +20,7 @@ private:
     int columns;
     vector<pointer> fila;
 public:
+    void print();
     ~matriz(){
         for (int i = 0; i < fila.size(); ++i)
             {
@@ -128,5 +129,15 @@ void sparseGaussianElimination(matriz &mat){
             }
             mat.erase(j, i);
         }
+    }
+}
+
+void matriz::print(){
+    for(int i = 0; i < this->filas(); i++){
+        unordered_map<int, double>::iterator b = this->begin(i);
+        for(int j = 0; j < this->columnas(); j++){
+            cout << *b++ << " ";
+        }
+        cout << "\n";
     }
 }
