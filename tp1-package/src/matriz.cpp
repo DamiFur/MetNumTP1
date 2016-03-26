@@ -141,3 +141,18 @@ void matriz::print(){
         cout << "\n";
     }
 }
+
+void choleskyDecomposition(matriz &mat){
+    for (int i = 0; i < mat.filas(); ++i)
+    {
+        double diag = sqrt(mat[i][i]);
+        mat[i][i] = diag;
+        for (int j = i+1; j < mat.filas(); ++j)
+            mat[j][i] /= diag;
+        for (int j = i+1; j < mat.filas(); ++j)
+        {
+        for (int k = i+1; k <= j; ++k)
+            mat[j][k] -= mat[j][i]*mat[k][i];
+        }
+    }
+}
