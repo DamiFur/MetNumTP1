@@ -23,6 +23,7 @@ public:
     void print();
     void gaussianElimination();
     void sparseGaussianElimination();
+    void choleskyDecomposition();
     ~matriz(){
         for (int i = 0; i < fila.size(); ++i)
             {
@@ -144,17 +145,17 @@ void matriz::print(){
     }
 }
 
-void choleskyDecomposition(matriz &mat){
-    for (int i = 0; i < mat.filas(); ++i)
+void matriz::choleskyDecomposition(){
+    for (int i = 0; i < this->filas(); ++i)
     {
-        double diag = sqrt(mat[i][i]);
-        mat[i][i] = diag;
-        for (int j = i+1; j < mat.filas(); ++j)
-            mat[j][i] /= diag;
-        for (int j = i+1; j < mat.filas(); ++j)
+        double diag = sqrt(this->fila[i][i]);
+        this->[i][i] = diag;
+        for (int j = i+1; j < this->filas(); ++j)
+            this->fila[j][i] /= diag;
+        for (int j = i+1; j < this->filas(); ++j)
         {
-        for (int k = i+1; k <= j; ++k)
-            mat[j][k] -= mat[j][i]*mat[k][i];
+            for (int k = i+1; k <= j; ++k)
+                this->fila[j][k] -= this->fila[j][i]*this->fila[k][i];
         }
     }
 }
