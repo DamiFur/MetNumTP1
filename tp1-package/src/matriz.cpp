@@ -21,6 +21,8 @@ private:
     vector<pointer> fila;
 public:
     void print();
+    void gaussianElimination();
+    void sparseGaussianElimination();
     ~matriz(){
         for (int i = 0; i < fila.size(); ++i)
             {
@@ -78,56 +80,56 @@ public:
     int columnas(){return columns;}
 };
  
-void gaussianElimination(matriz &mat){
-    int iteraciones = min(mat.columnas(), mat.filas());
+void matriz::gaussianElimination(){
+    int iteraciones = min(this->columnas(), this->filas());
     for (int i = 0; i < iteraciones; ++i)
     {
         int h = i;
-        while(h<mat.filas() and !mat.check(h, i))
+        while(h<this->filas() and !this->check(h, i))
             h++;
-        if(h==mat.filas())
+        if(h==this->filas())
             continue;
-        mat.swapFilas(h, i);
-        for (int j = i+1; j < mat.filas(); ++j)
+        this->swapFilas(h, i);
+        for (int j = i+1; j < this->filas(); ++j)
         {
-            if(!mat.check(j, i))
+            if(!this->check(j, i))
                 continue;
-            double pivot = mat[j][i]/mat[i][i];
-            mat.erase(j, i);
-            for (int k = i+1; k < mat.columnas(); ++k)
+            double pivot = this->fila[j][i]/this->fila[i][i];
+            this->erase(j, i);
+            for (int k = i+1; k < this->columnas(); ++k)
             {
-                if(!mat.check(i,k))
+                if(!this->check(i,k))
                     continue;
-                mat[j][k]-= mat[i][k]*pivot;
-                if(mat[j][k]<0.00001 and mat[j][k]>-0.00001)
-                    mat.erase(j,k);
+                this->fila[j][k]-= this->fila[i][k]*pivot;
+                if(this->fila[j][k]<0.00001 and this->fila[j][k]>-0.00001)
+                    this->erase(j,k);
             }
         }
     }
 }
  
-void sparseGaussianElimination(matriz &mat){
-    int iteraciones = min(mat.columnas(), mat.filas());
+void matriz::sparseGaussianElimination(){
+    int iteraciones = min(this->columnas(), this->filas());
     for (int i = 0; i < iteraciones; ++i)
     {
         int h = i;
-        while(h<mat.filas() and !mat.check(h, i))
+        while(h<this->filas() and !this->check(h, i))
             h++;
-        if(h==mat.filas())
+        if(h==this->filas())
             continue;
-        mat.swapFilas(h, i);
-        for (int j = i+1; j < mat.filas(); ++j)
+        this->swapFilas(h, i);
+        for (int j = i+1; j < this->filas(); ++j)
         {
-            if(!mat.check(j, i))
+            if(!this->check(j, i))
                 continue;
-            double pivot = mat[j][i]/mat[i][i];
-            for (auto k = mat.begin(i); k != mat.end(i); ++k)
+            double pivot = this->fila[j][i]/this->fila[i][i];
+            for (auto k = this->begin(i); k != this->end(i); ++k)
             {   
-                mat[j][k->first]-= k->second*pivot;
-                if(mat[j][k->first]<0.00001 and mat[j][k->first]>-0.00001)
-                    mat.erase(j,k->first);
+                this->fila[j][k->first]-= k->second*pivot;
+                if(this->fila[j][k->first]<0.00001 and this->fila[j][k->first]>-0.00001)
+                    this->erase(j,k->first);
             }
-            mat.erase(j, i);
+            this->erase(j, i);
         }
     }
 }
