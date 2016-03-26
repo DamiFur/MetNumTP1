@@ -122,7 +122,7 @@ void sparseGaussianElimination(matriz &mat){
                 continue;
             double pivot = mat[j][i]/mat[i][i];
             for (auto k = mat.begin(i); k != mat.end(i); ++k)
-            {
+            {   
                 mat[j][k->first]-= k->second*pivot;
                 if(mat[j][k->first]<0.00001 and mat[j][k->first]>-0.00001)
                     mat.erase(j,k->first);
@@ -135,8 +135,8 @@ void sparseGaussianElimination(matriz &mat){
 void matriz::print(){
     for(int i = 0; i < this->filas(); i++){
         unordered_map<int, double>::iterator b = this->begin(i);
-        for(int j = 0; j < this->columnas(); j++){
-            cout << *b++ << " ";
+        for(auto it = this->begin(i); it != this->end(i); ++it){
+            cout << it->first << ": " << it->second << " ";
         }
         cout << "\n";
     }
