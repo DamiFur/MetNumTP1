@@ -136,7 +136,7 @@ void matriz::sparseGaussianElimination(){
 }
 
 void matriz::print(){
-    for(int i = this->filas() - 1; i >= 0 ; i--){
+    for(int i = 0; i < this->filas() ; i++){
         for (int j = 0; j < this->columnas(); ++j)
         {
             if(check(i, j))
@@ -169,5 +169,3 @@ void matriz::choleskyDecomposition(){
         }
     }
 }
-
-int main(){}
