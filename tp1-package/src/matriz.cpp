@@ -136,10 +136,10 @@ void matriz::sparseGaussianElimination(){
 }
 
 void matriz::print(){
-    for(int i = 0; i < this->filas(); i++){
+    for(int i = this->filas() - 1; i >= 0 ; i--){
         unordered_map<int, double>::iterator b = this->begin(i);
         for(auto it = this->begin(i); it != this->end(i); ++it){
-            cout << it->first << ": " << it->second << " ";
+            cout << it->second << "\t";
         }
         cout << "\n";
     }
@@ -149,7 +149,7 @@ void matriz::choleskyDecomposition(){
     for (int i = 0; i < this->filas(); ++i)
     {
         double diag = sqrt(this->fila[i][i]);
-        this->[i][i] = diag;
+        this->fila[i][i] = diag;
         for (int j = i+1; j < this->filas(); ++j)
             this->fila[j][i] /= diag;
         for (int j = i+1; j < this->filas(); ++j)
