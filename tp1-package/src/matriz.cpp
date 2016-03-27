@@ -137,12 +137,22 @@ void matriz::sparseGaussianElimination(){
 
 void matriz::print(){
     for(int i = this->filas() - 1; i >= 0 ; i--){
+        for (int j = 0; j < this->columnas(); ++j)
+        {
+            if(check(i, j))
+                cout << (*this)[i][j] << " ";
+            else
+                cout << 0 << " ";
+        }
+        cout << endl;
+    }
+    /*for(int i = this->filas() - 1; i >= 0 ; i--){
         unordered_map<int, double>::iterator b = this->begin(i);
         for(auto it = this->begin(i); it != this->end(i); ++it){
             cout << it->second << "\t";
         }
         cout << "\n";
-    }
+    }*/
 }
 
 void matriz::choleskyDecomposition(){
@@ -159,3 +169,5 @@ void matriz::choleskyDecomposition(){
         }
     }
 }
+
+int main(){}
