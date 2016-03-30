@@ -20,10 +20,10 @@ private:
     int columns;
     vector<pointer> fila;
 public:
-    void print();
     void gaussianElimination();
     void sparseGaussianElimination();
     void choleskyDecomposition();
+    void print(ofstream &out);
     ~matriz(){
         for (int i = 0; i < fila.size(); ++i)
             {
@@ -80,7 +80,7 @@ public:
     int filas(){return fils;}
     int columnas(){return columns;}
 };
- 
+
 void matriz::gaussianElimination(){
     int iteraciones = min(this->columnas(), this->filas());
     for (int i = 0; i < iteraciones; ++i)
@@ -135,25 +135,7 @@ void matriz::sparseGaussianElimination(){
     }
 }
 
-void matriz::print(){
-    for(int i = 0; i < this->filas() ; i++){
-        for (int j = 0; j < this->columnas(); ++j)
-        {
-            if(check(i, j))
-                cout << (*this)[i][j] << " ";
-            else
-                cout << 0 << " ";
-        }
-        cout << endl;
-    }
-    /*for(int i = this->filas() - 1; i >= 0 ; i--){
-        unordered_map<int, double>::iterator b = this->begin(i);
-        for(auto it = this->begin(i); it != this->end(i); ++it){
-            cout << it->second << "\t";
-        }
-        cout << "\n";
-    }*/
-}
+
 
 void matriz::choleskyDecomposition(){
     for (int i = 0; i < this->filas(); ++i)
@@ -167,5 +149,19 @@ void matriz::choleskyDecomposition(){
             for (int k = i+1; k <= j; ++k)
                 this->fila[j][k] -= this->fila[j][i]*this->fila[k][i];
         }
+    }
+}
+
+
+void matriz::print(ofstream &out){
+    for(int i = 0; i < this->filas() ; i++){
+        for (int j = 0; j < this->columnas(); ++j)
+        {
+            if(this->check(i, j))
+                out << (*this)[i][j] << " ";
+            else
+                out << 0 << " ";
+        }
+        out << endl;
     }
 }
