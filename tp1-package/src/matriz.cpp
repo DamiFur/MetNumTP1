@@ -6,7 +6,7 @@
 using namespace std;
 
 /*extern "C"{
-    extern double asmsqrt(double x);
+    extern double asmsqrt(double *x);
 }*/
  
 struct pointer
