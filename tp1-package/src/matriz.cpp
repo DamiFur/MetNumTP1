@@ -4,6 +4,10 @@
 #include <algorithm>
  
 using namespace std;
+
+/*extern "C"{
+    extern double asmsqrt(double x);
+}*/
  
 struct pointer
 {
