@@ -72,6 +72,7 @@ int main(){
 			cout << "exiting choleskyDecomposition" << endl;
 		}
 		matrix.print(output);
+		cout << "Amount of operations: " << matrix.getCantOp() << endl;
 		cout << "Time elapsed: " << chrono::duration_cast<std::chrono::microseconds>(end - start).count() << " microseconds" << endl;
 	}else{
 		wp(allTheGames, equipos, output);

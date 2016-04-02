@@ -23,6 +23,7 @@ private:
     int fils;
     int columns;
     vector<pointer> fila;
+    int cantOp;
 public:
     void gaussianElimination();
     void sparseGaussianElimination();
@@ -84,9 +85,19 @@ public:
     }
     int filas(){return fils;}
     int columnas(){return columns;}
+    void sumCantOp(){
+        cantOp++;
+    }
+    int getCantOp(){
+        return cantOp;
+    }
+    void resetCantOp(){
+        cantOp = 0;
+    }
 };
 
 void matriz::gaussianElimination(){
+    this->resetCantOp();
     int iteraciones = min(this->columnas(), this->filas());
     for (int i = 0; i < iteraciones; ++i)
     {
@@ -101,12 +112,15 @@ void matriz::gaussianElimination(){
             if(!this->check(j, i))
                 continue;
             double pivot = this->fila[j][i]/this->fila[i][i];
+            this->sumCantOp();
             this->erase(j, i);
             for (int k = i+1; k < this->columnas(); ++k)
             {
                 if(!this->check(i,k))
                     continue;
                 this->fila[j][k]-= this->fila[i][k]*pivot;
+                this->sumCantOp();
+                this->sumCantOp();
                 if(this->fila[j][k]<0.00001 and this->fila[j][k]>-0.00001)
                     this->erase(j,k);
             }
@@ -115,6 +129,7 @@ void matriz::gaussianElimination(){
 }
  
 void matriz::sparseGaussianElimination(){
+    this->resetCantOp();
     int iteraciones = min(this->columnas(), this->filas());
     for (int i = 0; i < iteraciones; ++i)
     {
@@ -129,9 +144,12 @@ void matriz::sparseGaussianElimination(){
             if(!this->check(j, i))
                 continue;
             double pivot = this->fila[j][i]/this->fila[i][i];
+            this->sumCantOp();
             for (auto k = this->begin(i); k != this->end(i); ++k)
             {   
                 this->fila[j][k->first]-= k->second*pivot;
+                this->sumCantOp();
+                this->sumCantOp();
                 if(this->fila[j][k->first]<0.00001 and this->fila[j][k->first]>-0.00001)
                     this->erase(j,k->first);
             }
@@ -143,16 +161,21 @@ void matriz::sparseGaussianElimination(){
 
 
 void matriz::choleskyDecomposition(){
+    this->resetCantOp();
     for (int i = 0; i < this->filas(); ++i)
     {
         double diag = asmsqrt(&this->fila[i][i]);
+        this->sumCantOp();
         this->fila[i][i] = diag;
         for (int j = i+1; j < this->filas(); ++j)
             this->fila[j][i] /= diag;
+            this->sumCantOp();
         for (int j = i+1; j < this->filas(); ++j)
         {
             for (int k = i+1; k <= j; ++k)
                 this->fila[j][k] -= this->fila[j][i]*this->fila[k][i];
+                this->sumCantOp();
+                this->sumCantOp();
         }
     }
 }
