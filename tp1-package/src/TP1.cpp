@@ -96,6 +96,25 @@ int main(int argc, char * argv[]){
 			matrix.choleskyDecomposition();
 			end = std::chrono::system_clock::now();
 			cout << "exiting choleskyDecomposition" << endl;
+			// Resuelvo el sistema de ecuaciones
+			// L * Lt * x = b
+			// (2) Lt * x = y
+			// (1) L * y = b
+			// Siedo L triangular inferior de la matriz de cholesky y Lt superior
+			// Primero resuelvo (1) para hallar y y luego remplazo en (2) y resuelvo
+			vector<double> b(matrix.filas());
+			for (int i = 0; i<b.size(); ++i) {
+				b[i] = matrix[i][matrix.columnas()-1];
+			}
+			// Resuelvo el sistema (1)
+			vector<double> y = matrix.resolver_sistema_inferior(b);
+			// Resuelvo el sistema (2)
+			vector<double> x = matrix.resolver_sistema_superior(y);
+			cout << "Ranking:\n";
+			for (int i = 0; i<x.size(); ++i) {
+				cout << "Equipo " << traductorIndiceEquipo[i] << " = " << x[i] << endl;
+			}
+			cout << endl;
 		}
 		matrix.print(output);
 		cout << "Time elapsed: " << chrono::duration_cast<std::chrono::microseconds>(end - start).count() << " microseconds" << endl;
