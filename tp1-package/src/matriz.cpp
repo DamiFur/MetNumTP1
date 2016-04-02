@@ -177,9 +177,9 @@ void matriz::print(ofstream &out){
         for (int j = 0; j < this->columnas(); ++j)
         {
             if(this->check(i, j))
-                out << (*this)[i][j] << "\t";
+                out << (*this)[i][j] << "\t\t";
             else
-                out << 0 << "\t";
+                out << 0 << "\t\t";
         }
         out << endl;
     }
@@ -190,9 +190,9 @@ void matriz::print(ostream &out){
         for (int j = 0; j < this->columnas(); ++j)
         {
             if(this->check(i, j))
-                out << (*this)[i][j] << "\t";
+                out << (*this)[i][j] << "\t\t";
             else
-                out << 0 << "\t";
+                out << 0 << "\t\t";
         }
         out << endl;
     }
