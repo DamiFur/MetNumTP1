@@ -163,6 +163,12 @@ void matriz::choleskyDecomposition(){
                 this->fila[j][k] -= this->fila[j][i]*this->fila[k][i];
         }
     }
+
+    for(int k = 0; k < this->filas(); ++k){
+        for(int l = k - 1; l >= 0; --l){
+            (*this)[l][k] = (*this)[k][l];
+        }
+    }
 }
 
 
