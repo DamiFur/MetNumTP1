@@ -84,8 +84,9 @@ int main(int argc, char * argv[]){
 				b[i] = matrix[i][matrix.columnas()-1];
 			}
 			vector<double> res = matrix.resolver_sistema_superior(b);
+			cout << "Ranking:\n";
 			for (int i = 0; i<res.size(); ++i) {
-				cout << res[i] << " ";
+				cout << "Equipo " << traductorIndiceEquipo[i] << " = " << res[i] << endl;
 			}
 			cout << endl;
 		}
