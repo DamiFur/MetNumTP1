@@ -11,6 +11,7 @@ using namespace std;
 void completeColleyMatrix(matriz &mat, vector<int*> allTheGames, int equipos);
 void wp(vector<int*> allTheGames, int equipos, ofstream &out);
 void printMatriz(matriz &mat, ofstream &out);
+unordered_map<int, int> traductorEquipoIndice;
 
 int main(int argc, char * argv[]){
 
@@ -110,7 +111,6 @@ int main(int argc, char * argv[]){
 
 void completeColleyMatrix(matriz &mat, vector<int*> allTheGames, int equipos){
 
-	unordered_map<int, int> traductorEquipoIndice;
 	int indice = 0;
 
 	for(auto it = allTheGames.begin(); it != allTheGames.end(); it++){
