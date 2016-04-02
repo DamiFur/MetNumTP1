@@ -8,7 +8,7 @@
 
 using namespace std;
 
-void completeColleyMatrix(matriz &mat, vector<int> &b, vector<int*> allTheGames, int equipos);
+void completeColleyMatrix(matriz &mat, vector<int*> allTheGames, int equipos);
 void wp(vector<int*> allTheGames, int equipos, ofstream &out);
 void printMatriz(matriz &mat, ofstream &out);
 
@@ -52,9 +52,8 @@ int main(){
 	// }
 
 	if(metodo<2){
-		matriz matrix = matriz(equipos, equipos);
-		vector<int> b (equipos);
-		completeColleyMatrix(matrix, b, allTheGames, equipos);
+		matriz matrix = matriz(equipos, equipos + 1);
+		completeColleyMatrix(matrix, allTheGames, equipos);
 		// matrix.print(cout);
 		std::chrono::time_point<std::chrono::system_clock> start, end;
 		if(metodo==0){
@@ -84,7 +83,7 @@ int main(){
 
 }
 
-void completeColleyMatrix(matriz &mat, vector<int> &b, vector<int*> allTheGames, int equipos){
+void completeColleyMatrix(matriz &mat, vector<int*> allTheGames, int equipos){
 
 	unordered_map<int, int> traductorEquipoIndice;
 	int indice = 0;
@@ -93,21 +92,21 @@ void completeColleyMatrix(matriz &mat, vector<int> &b, vector<int*> allTheGames,
 
 		if(traductorEquipoIndice.count((*it)[1]) == 0){
 			traductorEquipoIndice[(*it)[1]] = indice++;
-			b[traductorEquipoIndice[(*it)[1]]] = 0;
+			mat[traductorEquipoIndice[(*it)[1]]][equipos] = 0;
 		}
 
 		if(traductorEquipoIndice.count((*it)[3]) == 0){
 			traductorEquipoIndice[(*it)[3]] = indice++;
-			b[traductorEquipoIndice[(*it)[3]]] = 0;
+			mat[traductorEquipoIndice[(*it)[3]]][equipos] = 0;
 		}
 
 		bool winner = ((*it)[2] > (*it)[4]);
 		if(winner){
-			b[traductorEquipoIndice[(*it)[1]]]++;
-			b[traductorEquipoIndice[(*it)[3]]]--;
+			mat[traductorEquipoIndice[(*it)[1]]][equipos]++;
+			mat[traductorEquipoIndice[(*it)[3]]][equipos]--;
 		} else {
-			b[traductorEquipoIndice[(*it)[3]]]++;
-			b[traductorEquipoIndice[(*it)[1]]]--;
+			mat[traductorEquipoIndice[(*it)[3]]][equipos]++;
+			mat[traductorEquipoIndice[(*it)[1]]][equipos]--;
 		}
 
 		mat[traductorEquipoIndice[(*it)[1]]][traductorEquipoIndice[(*it)[1]]]++;
@@ -117,9 +116,9 @@ void completeColleyMatrix(matriz &mat, vector<int> &b, vector<int*> allTheGames,
 	}
 
 
-	for(auto it = b.begin(); it != b.end(); it++){
-		*it /= 2;
-		(*it)++;
+	for(int i = 0; i < equipos; i++){
+		mat[i][equipos] /= 2;
+		mat[i][equipos]++;
 	}
 
 	for(int l = 0; l < equipos; l++){
