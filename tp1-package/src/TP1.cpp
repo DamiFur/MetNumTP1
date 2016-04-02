@@ -55,7 +55,7 @@ int main(){
 		matriz matrix = matriz(equipos, equipos);
 		vector<int> b (equipos);
 		completeColleyMatrix(matrix, b, allTheGames, equipos);
-		matrix.print(cout);
+		// matrix.print(cout);
 		std::chrono::time_point<std::chrono::system_clock> start, end;
 		if(metodo==0){
 			cout << "entring gaussianElimination" << endl;
@@ -65,9 +65,11 @@ int main(){
 			cout << "exiting gaussianElimination" << endl;
 		}
 		else{
+			cout << "entring choleskyDecomposition" << endl;
 			start = std::chrono::system_clock::now();
 			matrix.choleskyDecomposition();
 			end = std::chrono::system_clock::now();
+			cout << "exiting choleskyDecomposition" << endl;
 		}
 		matrix.print(output);
 		cout << "Time elapsed: " << chrono::duration_cast<std::chrono::microseconds>(end - start).count() << " microseconds" << endl;

@@ -5,9 +5,9 @@
  
 using namespace std;
 
-/*extern "C"{
+extern "C"{
     extern double asmsqrt(double *x);
-}*/
+}
  
 struct pointer
 {
@@ -145,7 +145,7 @@ void matriz::sparseGaussianElimination(){
 void matriz::choleskyDecomposition(){
     for (int i = 0; i < this->filas(); ++i)
     {
-        double diag = sqrt(this->fila[i][i]);
+        double diag = asmsqrt(&this->fila[i][i]);
         this->fila[i][i] = diag;
         for (int j = i+1; j < this->filas(); ++j)
             this->fila[j][i] /= diag;
