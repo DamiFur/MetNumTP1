@@ -5,9 +5,9 @@
  
 using namespace std;
 
-extern "C"{
+/*extern "C"{
     extern double asmsqrt(double *x);
-}
+}*/
  
 struct pointer
 {
@@ -152,7 +152,8 @@ void matriz::sparseGaussianElimination(){
 void matriz::choleskyDecomposition(){
     for (int i = 0; i < this->filas(); ++i)
     {
-        double diag = asmsqrt(&this->fila[i][i]);
+//        double diag = asmsqrt(&this->fila[i][i]);
+        double diag = sqrt(this->fila[i][i]);
         this->fila[i][i] = diag;
         for (int j = i+1; j < this->filas(); ++j)
             this->fila[j][i] /= diag;
@@ -208,14 +209,14 @@ vector<double> matriz::resolver_sistema_inferior(vector<double> b){
             }
         }
         if(fila[i].count(i)) {
-            ret[i] = (b[i]-suma)/fila[i][j];
+            ret[i] = (b[i]-sum)/fila[i][i];
         }
     }    
 
     return ret;
 }
 
-vector<double> resolver_sistema_superior(vector<double> b){
+vector<double> matriz::resolver_sistema_superior(vector<double> b){
     // a b c d
     // 0 e f g
     // 0 0 h i
@@ -232,7 +233,7 @@ vector<double> resolver_sistema_superior(vector<double> b){
             }
         }
         if(fila[i].count(i)) {
-            ret[i] = (b[i]-suma)/fila[i][j];
+            ret[i] = (b[i]-sum)/fila[i][i];
         }
     }    
 
