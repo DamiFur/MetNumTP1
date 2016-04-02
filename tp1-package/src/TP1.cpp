@@ -77,6 +77,16 @@ int main(int argc, char * argv[]){
 			matrix.gaussianElimination();
 			end = std::chrono::system_clock::now();
 			cout << "exiting gaussianElimination" << endl;
+			// Resuelvo el sistema de ecuaciones
+			vector<double> b(matrix.filas());
+			for (int i = 0; i<b.size(); ++i) {
+				b[i] = matrix[i][matrix.columnas()-1];
+			}
+			vector<double> res = matrix.resolver_sistema_superior(b);
+			for (int i = 0; i<res.size(); ++i) {
+				cout << res[i] << " ";
+			}
+			cout << endl;
 		}
 		else{
 			cout << "entring choleskyDecomposition" << endl;
