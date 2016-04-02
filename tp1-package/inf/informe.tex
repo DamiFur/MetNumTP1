@@ -1,0 +1,158 @@
+\documentclass[a4paper]{article}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{enumerate}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{indentfirst}
+\usepackage{fancyhdr}
+\usepackage{latexsym}
+\usepackage{multirow}
+\usepackage[colorlinks=true, linkcolor=black]{hyperref}
+%\usepackage{makeidx}
+%\usepackage{float}
+\usepackage{calc}
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage{amsfonts}
+%\lstset{language=C}
+\definecolor{gray}{gray}{0.5}
+\definecolor{light-gray}{gray}{0.95}
+\definecolor{orange}{rgb}{1,0.5,0}
+
+\input{page.layout}
+% \setcounter{secnumdepth}{2}
+\usepackage{underscore}
+\usepackage{caratula}
+\usepackage{url}
+\usepackage{float}
+
+\newcommand{\cod}[1]{{\tt #1}}
+\newcommand{\negro}[1]{{\bf #1}}
+\newcommand{\ital}[1]{{\em #1}}
+\newcommand{\may}[1]{{\sc #1}}
+\newcommand{\tab}{\hspace*{2em}}
+
+\hypersetup{
+ pdfstartview= {FitH \hypercalcbp{\paperheight-\topmargin-1in-\headheight}},
+ pdfauthor={Grupo},
+ pdfsubject={Dise\~{n}o}
+}
+
+\lstdefinestyle{customc}{
+  backgroundcolor=\color{light-gray},
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  numbers=left,
+  xleftmargin=\parindent,
+  language=C,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{blue},
+  commentstyle=\itshape\color{gray},
+  identifierstyle=\color{black},
+  stringstyle=\color{orange},
+}
+
+\lstdefinestyle{customasm}{
+  backgroundcolor=\color{light-gray},
+  belowcaptionskip=1\baselineskip,
+  numbers=left,
+  xleftmargin=\parindent,
+  language=[x86masm]Assembler,
+  keywordstyle=\bfseries\color{blue},
+  basicstyle=\footnotesize\ttfamily,
+  commentstyle=\itshape\color{gray},
+}
+
+\lstset{escapechar=@}
+
+
+\begin{document}
+
+\thispagestyle{empty}
+\materia{Métodos Númericos}
+\submateria{Primer Cuatrimestre de 2016}
+\titulo{Trabajo Práctico I}
+\subtitulo{(No) Todo Pasa}
+\integrante{Nicolas}{xxx/xx}{xxxxx@xxxx}
+\integrante{Damián Furman}{xxx/xx}{xxxxxx@xx}
+\integrante{Jorge Quintana}{344/11}{jorge.quintana.81@gmail.com}
+\integrante{Lucas Tavolaro Ortiz}{xxx/xx}{xxxxx@xxx}
+
+\makeatletter
+
+\maketitle
+\newpage
+
+\thispagestyle{empty}
+\vfill
+
+\thispagestyle{empty}
+\vspace{3cm}
+\tableofcontents
+\newpage
+
+\newenvironment{myindentpar}[1]
+{\begin{list}{1}
+         {\setlength{\leftmargin}{#1}}
+         \item[]
+}
+{\end{list} }
+
+%\normalsize
+\newpage
+
+% -------------------------------------------------------
+% Introducción Teórica
+% -------------------------------------------------------
+\input{intro.tex}
+
+% -------------------------------------------------------
+% Desarrollo
+% -------------------------------------------------------
+\newpage
+\input{desa.tex}
+
+% -------------------------------------------------------
+% resultados
+% -------------------------------------------------------
+\newpage
+\input{res.tex}
+
+% -------------------------------------------------------
+% Discusión
+% -------------------------------------------------------
+\newpage
+\input{disc.tex}
+
+% -------------------------------------------------------
+% Conclusiones
+% -------------------------------------------------------
+\newpage
+\input{conc.tex}
+
+% -------------------------------------------------------
+% Apéndice A
+% -------------------------------------------------------
+\newpage
+\input{Aappend.tex}
+
+% -------------------------------------------------------
+% Apéndice B
+% -------------------------------------------------------
+\newpage
+\input{Bappend.tex}
+
+% -------------------------------------------------------
+% Referencias
+% -------------------------------------------------------
+\newpage
+\input{ref.tex}
+
+
+\newpage
+\bibliographystyle{plain}
+\bibliography{tp1}
+
+\end{document}
