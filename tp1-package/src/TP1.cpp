@@ -10,12 +10,29 @@ void completeColleyMatrix(matriz &mat, vector<int> &b, vector<int*> allTheGames,
 void wp(vector<int*> allTheGames, int equipos, ofstream &out);
 void printMatriz(matriz &mat, ofstream &out);
 
-int main(){
+int main(int argc, char * argv[]){
 
-	string inputPath, outputPath;
-	cin >> inputPath >> outputPath;
-	int metodo;
-	cin >> metodo;
+	string inputPath, outputPath; 
+	int metodo; 
+	cout << argc << endl;
+	if (argc < 4){ 
+		cout << "Input: ";
+		cin >> inputPath;
+		cout << "Output: ";
+		cin >> outputPath; 
+		cout << "Metodo (0|1): ";
+		cin >> metodo;
+	} else {
+		inputPath = argv[1];
+		outputPath = argv[2];
+		metodo = atoi(argv[3]);
+		cout << "Input: " << inputPath << endl;
+		cout << "Output: " << outputPath << endl;
+		cout << "Metodo: " << metodo << endl;
+		if (!(metodo == 0 || metodo == 1))
+			return 1;
+	}
+		
 
 	ifstream input;
 	ofstream output;
