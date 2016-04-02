@@ -28,6 +28,7 @@ public:
     void sparseGaussianElimination();
     void choleskyDecomposition();
     void print(ofstream &out);
+    void print(ostream &out);
     ~matriz(){
         for (int i = 0; i < fila.size(); ++i)
             {
@@ -162,9 +163,22 @@ void matriz::print(ofstream &out){
         for (int j = 0; j < this->columnas(); ++j)
         {
             if(this->check(i, j))
-                out << (*this)[i][j] << " ";
+                out << (*this)[i][j] << "\t";
             else
-                out << 0 << " ";
+                out << 0 << "\t";
+        }
+        out << endl;
+    }
+}
+
+void matriz::print(ostream &out){
+    for(int i = 0; i < this->filas() ; i++){
+        for (int j = 0; j < this->columnas(); ++j)
+        {
+            if(this->check(i, j))
+                out << (*this)[i][j] << "\t";
+            else
+                out << 0 << "\t";
         }
         out << endl;
     }

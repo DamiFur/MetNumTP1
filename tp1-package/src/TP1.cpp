@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <list>
 #include <fstream>
+#include <chrono>
+#include <ctime>
 #include "matriz.cpp"
 
 using namespace std;
@@ -13,7 +15,8 @@ void printMatriz(matriz &mat, ofstream &out);
 int main(){
 
 	string inputPath, outputPath;
-	cin >> inputPath >> outputPath;
+	cin >> inputPath;
+	cin >> outputPath;
 	int metodo;
 	cin >> metodo;
 
@@ -39,9 +42,9 @@ int main(){
 		allTheGames.push_back(partido);
 	}
 
-	//Descomentar para testear el input
+	// Descomentar para testear el input
 
-	// for(list<int*>::iterator it = allTheGames.begin(); it != allTheGames.end(); it++){
+	// for(auto it = allTheGames.begin(); it != allTheGames.end(); it++){
 	// 	for(int i = 0; i < 5; i++){
 	// 		cout << (*it)[i] << " ";
 	// 	}
@@ -52,11 +55,22 @@ int main(){
 		matriz matrix = matriz(equipos, equipos);
 		vector<int> b (equipos);
 		completeColleyMatrix(matrix, b, allTheGames, equipos);
-		if(metodo==0)
+		matrix.print(cout);
+		std::chrono::time_point<std::chrono::system_clock> start, end;
+		if(metodo==0){
+			cout << "entring gaussianElimination" << endl;
+			start = std::chrono::system_clock::now();
 			matrix.gaussianElimination();
-		else
+			end = std::chrono::system_clock::now();
+			cout << "exiting gaussianElimination" << endl;
+		}
+		else{
+			start = std::chrono::system_clock::now();
 			matrix.choleskyDecomposition();
+			end = std::chrono::system_clock::now();
+		}
 		matrix.print(output);
+		cout << "Time elapsed: " << chrono::duration_cast<std::chrono::microseconds>(end - start).count() << " microseconds" << endl;
 	}else{
 		wp(allTheGames, equipos, output);
 	}
@@ -69,14 +83,6 @@ int main(){
 }
 
 void completeColleyMatrix(matriz &mat, vector<int> &b, vector<int*> allTheGames, int equipos){
-
-	for(int i = 0; i < equipos; i++){
-		for(int j = 0; j < equipos; j++){
-			//Fijarse que con esto perdes las ventajas de la matriz esparsa
-			mat[i][j] = 0;
-		}
-	}
-
 
 	unordered_map<int, int> traductorEquipoIndice;
 	int indice = 0;
