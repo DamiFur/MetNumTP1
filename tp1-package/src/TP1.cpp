@@ -8,18 +8,34 @@
 
 using namespace std;
 
-void completeColleyMatrix(matriz &mat, vector<int> &b, vector<int*> allTheGames, int equipos);
+void completeColleyMatrix(matriz &mat, vector<int*> allTheGames, int equipos);
 void wp(vector<int*> allTheGames, int equipos, ofstream &out);
 void printMatriz(matriz &mat, ofstream &out);
+unordered_map<int, int> traductorEquipoIndice, traductorIndiceEquipo;
 
-int main(){
+int main(int argc, char * argv[]){
 
-	string inputPath, outputPath;
-	cin >> inputPath;
-	cin >> outputPath;
-	int metodo;
-	cin >> metodo;
-
+	string inputPath, outputPath; 
+	int metodo; 
+	cout << argc << endl;
+	if (argc < 4){ 
+		cout << "Input: ";
+		cin >> inputPath;
+		cout << "Output: ";
+		cin >> outputPath; 
+		cout << "Metodo (0|1): ";
+		cin >> metodo;
+	} else {
+		inputPath = argv[1];
+		outputPath = argv[2];
+		metodo = atoi(argv[3]);
+		cout << "Input: " << inputPath << endl;
+		cout << "Output: " << outputPath << endl;
+		cout << "Metodo: " << metodo << endl;
+		if (!(metodo == 0 || metodo == 1))
+			return 1;
+	}
+		
 	ifstream input;
 	ofstream output;
 	input.open(inputPath);
@@ -52,9 +68,8 @@ int main(){
 	// }
 
 	if(metodo<2){
-		matriz matrix = matriz(equipos, equipos);
-		vector<int> b (equipos);
-		completeColleyMatrix(matrix, b, allTheGames, equipos);
+		matriz matrix = matriz(equipos, equipos + 1);
+		completeColleyMatrix(matrix, allTheGames, equipos);
 		// matrix.print(cout);
 		std::chrono::time_point<std::chrono::system_clock> start, end;
 		if(metodo==0){
@@ -63,6 +78,17 @@ int main(){
 			matrix.gaussianElimination();
 			end = std::chrono::system_clock::now();
 			cout << "exiting gaussianElimination" << endl;
+			// Resuelvo el sistema de ecuaciones
+			vector<double> b(matrix.filas());
+			for (int i = 0; i<b.size(); ++i) {
+				b[i] = matrix[i][matrix.columnas()-1];
+			}
+			vector<double> res = matrix.resolver_sistema_superior(b);
+			cout << "Ranking:\n";
+			for (int i = 0; i<res.size(); ++i) {
+				cout << "Equipo " << traductorIndiceEquipo[i] << " = " << res[i] << endl;
+			}
+			cout << endl;
 		}
 		else{
 			cout << "entring choleskyDecomposition" << endl;
@@ -70,6 +96,25 @@ int main(){
 			matrix.choleskyDecomposition();
 			end = std::chrono::system_clock::now();
 			cout << "exiting choleskyDecomposition" << endl;
+			// Resuelvo el sistema de ecuaciones
+			// L * Lt * x = b
+			// (2) Lt * x = y
+			// (1) L * y = b
+			// Siedo L triangular inferior de la matriz de cholesky y Lt superior
+			// Primero resuelvo (1) para hallar y y luego remplazo en (2) y resuelvo
+			vector<double> b(matrix.filas());
+			for (int i = 0; i<b.size(); ++i) {
+				b[i] = matrix[i][matrix.columnas()-1];
+			}
+			// Resuelvo el sistema (1)
+			vector<double> y = matrix.resolver_sistema_inferior(b);
+			// Resuelvo el sistema (2)
+			vector<double> x = matrix.resolver_sistema_superior(y);
+			cout << "Ranking:\n";
+			for (int i = 0; i<x.size(); ++i) {
+				cout << "Equipo " << traductorIndiceEquipo[i] << " = " << x[i] << endl;
+			}
+			cout << endl;
 		}
 		matrix.print(output);
 		cout << "Amount of operations: " << matrix.getCantOp() << endl;
@@ -85,30 +130,31 @@ int main(){
 
 }
 
-void completeColleyMatrix(matriz &mat, vector<int> &b, vector<int*> allTheGames, int equipos){
+void completeColleyMatrix(matriz &mat, vector<int*> allTheGames, int equipos){
 
-	unordered_map<int, int> traductorEquipoIndice;
 	int indice = 0;
-
+	traductorIndiceEquipo.clear();
 	for(auto it = allTheGames.begin(); it != allTheGames.end(); it++){
 
 		if(traductorEquipoIndice.count((*it)[1]) == 0){
+			traductorIndiceEquipo[indice] = (*it)[1];
 			traductorEquipoIndice[(*it)[1]] = indice++;
-			b[traductorEquipoIndice[(*it)[1]]] = 0;
+			mat[traductorEquipoIndice[(*it)[1]]][equipos] = 0;
 		}
 
 		if(traductorEquipoIndice.count((*it)[3]) == 0){
+			traductorIndiceEquipo[indice] = (*it)[3];
 			traductorEquipoIndice[(*it)[3]] = indice++;
-			b[traductorEquipoIndice[(*it)[3]]] = 0;
+			mat[traductorEquipoIndice[(*it)[3]]][equipos] = 0;
 		}
 
 		bool winner = ((*it)[2] > (*it)[4]);
 		if(winner){
-			b[traductorEquipoIndice[(*it)[1]]]++;
-			b[traductorEquipoIndice[(*it)[3]]]--;
+			mat[traductorEquipoIndice[(*it)[1]]][equipos]++;
+			mat[traductorEquipoIndice[(*it)[3]]][equipos]--;
 		} else {
-			b[traductorEquipoIndice[(*it)[3]]]++;
-			b[traductorEquipoIndice[(*it)[1]]]--;
+			mat[traductorEquipoIndice[(*it)[3]]][equipos]++;
+			mat[traductorEquipoIndice[(*it)[1]]][equipos]--;
 		}
 
 		mat[traductorEquipoIndice[(*it)[1]]][traductorEquipoIndice[(*it)[1]]]++;
@@ -118,9 +164,9 @@ void completeColleyMatrix(matriz &mat, vector<int> &b, vector<int*> allTheGames,
 	}
 
 
-	for(auto it = b.begin(); it != b.end(); it++){
-		*it /= 2;
-		(*it)++;
+	for(int i = 0; i < equipos; i++){
+		mat[i][equipos] /= 2;
+		mat[i][equipos]++;
 	}
 
 	for(int l = 0; l < equipos; l++){

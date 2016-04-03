@@ -5,15 +5,18 @@
  
 using namespace std;
 
-extern "C"{
+/*extern "C"{
     extern double asmsqrt(double *x);
-}
+}*/
  
 struct pointer
 {
     unordered_map<int, double> * col;
     double &operator[](int i){
         return (*col)[i];
+    }
+    bool count(int i) {
+        return col->count(i);
     }
 }__attribute__((packed));
  
@@ -30,6 +33,8 @@ public:
     void choleskyDecomposition();
     void print(ofstream &out);
     void print(ostream &out);
+    vector<double> resolver_sistema_inferior(vector<double> b);
+    vector<double> resolver_sistema_superior(vector<double> b);
     ~matriz(){
         for (int i = 0; i < fila.size(); ++i)
             {
@@ -44,7 +49,7 @@ public:
         {
             pointer tmp;
             tmp.col = new unordered_map<int, double>;
-            tmp.col->reserve(j);
+            tmp.col->reserve(j); // TODO: Revisar esta linea porque reserva elementos al dope
             fila.push_back(tmp);
         }
         return;
@@ -94,6 +99,7 @@ public:
     void resetCantOp(){
         cantOp = 0;
     }
+
 };
 
 void matriz::gaussianElimination(){
@@ -164,8 +170,11 @@ void matriz::choleskyDecomposition(){
     this->resetCantOp();
     for (int i = 0; i < this->filas(); ++i)
     {
-        double diag = asmsqrt(&this->fila[i][i]);
+
+//        double diag = asmsqrt(&this->fila[i][i]);
+        double diag = sqrt(this->fila[i][i]);
         this->sumCantOp();
+
         this->fila[i][i] = diag;
         for (int j = i+1; j < this->filas(); ++j)
             this->fila[j][i] /= diag;
@@ -178,6 +187,12 @@ void matriz::choleskyDecomposition(){
                 this->sumCantOp();
         }
     }
+
+    for(int k = 0; k < this->filas(); ++k){
+        for(int l = k - 1; l >= 0; --l){
+            (*this)[l][k] = (*this)[k][l];
+        }
+    }
 }
 
 
@@ -186,9 +201,9 @@ void matriz::print(ofstream &out){
         for (int j = 0; j < this->columnas(); ++j)
         {
             if(this->check(i, j))
-                out << (*this)[i][j] << "\t";
+                out << (*this)[i][j] << "\t\t";
             else
-                out << 0 << "\t";
+                out << 0 << "\t\t";
         }
         out << endl;
     }
@@ -199,10 +214,59 @@ void matriz::print(ostream &out){
         for (int j = 0; j < this->columnas(); ++j)
         {
             if(this->check(i, j))
-                out << (*this)[i][j] << "\t";
+                out << (*this)[i][j] << "\t\t";
             else
-                out << 0 << "\t";
+                out << 0 << "\t\t";
         }
         out << endl;
     }
 }
+
+vector<double> matriz::resolver_sistema_inferior(vector<double> b){
+    // a 0 0 0
+    // b c 0 0
+    // d e f 0
+    // g h i j
+    // resuelvo de arriba para abajo un triangular inferior tal que
+    // Ax = b utilizando sustitucion
+    vector<double> ret(b.size(), 0.0);
+
+    for (int i = 0; i<b.size(); ++i){
+        double sum = 0.0;
+        for(int j = 0; j<i; ++j){
+            if(fila[i].count(j)) {
+                sum += ret[j] * fila[i][j];
+            }
+        }
+        if(fila[i].count(i)) {
+            ret[i] = (b[i]-sum)/fila[i][i];
+        }
+    }    
+
+    return ret;
+}
+
+vector<double> matriz::resolver_sistema_superior(vector<double> b){
+    // a b c d
+    // 0 e f g
+    // 0 0 h i
+    // 0 0 0 j
+    // resuelvo de abajo para arriba un triangular superior tal que
+    // Ax = b utilizando sustitucion
+    vector<double> ret(b.size(), 0.0);
+
+    for (int i = b.size()-1; i>=0; --i){
+        double sum = 0.0;
+        for(int j = i+1; j<b.size(); ++j) {
+            if(fila[i].count(j)) {
+                sum += ret[j] * fila[i][j];
+            }
+        }
+        if(fila[i].count(i)) {
+            ret[i] = (b[i]-sum)/fila[i][i];
+        }
+    }    
+
+    return ret;
+}
+
