@@ -4,6 +4,7 @@
 #include <fstream>
 #include <chrono>
 #include <ctime>
+#include <map>
 #include "matriz.cpp"
 
 using namespace std;
@@ -72,6 +73,7 @@ int main(int argc, char * argv[]){
 		completeColleyMatrix(matrix, allTheGames, equipos);
 		// matrix.print(cout);
 		std::chrono::time_point<std::chrono::system_clock> start, end;
+		map<int, double> resultado_equipos;
 		if(metodo==0){
 			cout << "entring gaussianElimination" << endl;
 			start = std::chrono::system_clock::now();
@@ -84,11 +86,9 @@ int main(int argc, char * argv[]){
 				b[i] = matrix[i][matrix.columnas()-1];
 			}
 			vector<double> res = matrix.resolver_sistema_superior(b);
-			cout << "Ranking:\n";
 			for (int i = 0; i<res.size(); ++i) {
-				cout << "Equipo " << traductorIndiceEquipo[i] << " = " << res[i] << endl;
+				resultado_equipos[traductorIndiceEquipo[i]] = res[i];
 			}
-			cout << endl;
 		}
 		else{
 			cout << "entring choleskyDecomposition" << endl;
@@ -110,13 +110,14 @@ int main(int argc, char * argv[]){
 			vector<double> y = matrix.resolver_sistema_inferior(b);
 			// Resuelvo el sistema (2)
 			vector<double> x = matrix.resolver_sistema_superior(y);
-			cout << "Ranking:\n";
 			for (int i = 0; i<x.size(); ++i) {
-				cout << "Equipo " << traductorIndiceEquipo[i] << " = " << x[i] << endl;
+				resultado_equipos[traductorIndiceEquipo[i]] = x[i];
 			}
-			cout << endl;
 		}
-		matrix.print(output);
+		for (auto res_e : resultado_equipos) {
+			output << res_e.second << endl;
+		}
+		matrix.print(cout);
 		cout << "Time elapsed: " << chrono::duration_cast<std::chrono::microseconds>(end - start).count() << " microseconds" << endl;
 	}else{
 		wp(allTheGames, equipos, output);
