@@ -8,6 +8,8 @@ using namespace std;
 /*extern "C"{
     extern double asmsqrt(double *x);
 }*/
+
+const int MAX_RESERVE_MATRIX = 1024;
  
 struct pointer
 {
@@ -48,7 +50,7 @@ public:
         {
             pointer tmp;
             tmp.col = new unordered_map<int, double>;
-            tmp.col->reserve(j); // TODO: Revisar esta linea porque reserva elementos al dope
+            tmp.col->reserve(min(j, MAX_RESERVE_MATRIX));
             fila.push_back(tmp);
         }
         return;
