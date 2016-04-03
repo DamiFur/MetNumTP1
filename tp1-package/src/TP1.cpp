@@ -117,7 +117,7 @@ int main(int argc, char * argv[]){
 		for (auto res_e : resultado_equipos) {
 			output << res_e.second << endl;
 		}
-		matrix.print(cout);
+		//matrix.print(cout);
 		cout << "Time elapsed: " << chrono::duration_cast<std::chrono::microseconds>(end - start).count() << " microseconds" << endl;
 	}else{
 		wp(allTheGames, equipos, output);
