@@ -10,7 +10,7 @@
 using namespace std;
 
 void completeColleyMatrix(matriz &mat, vector<int*> allTheGames, int equipos);
-void wp(vector<int*> allTheGames, int equipos, ofstream &out);
+unsigned long long int wp(vector<int*> allTheGames, int equipos, ofstream &out);
 void printMatriz(matriz &mat, ofstream &out);
 unordered_map<int, int> traductorEquipoIndice, traductorIndiceEquipo;
 
@@ -18,7 +18,6 @@ int main(int argc, char * argv[]){
 
 	string inputPath, outputPath; 
 	int metodo; 
-	cout << argc << endl;
 	if (argc < 4){ 
 		cout << "Input: ";
 		cin >> inputPath;
@@ -30,10 +29,7 @@ int main(int argc, char * argv[]){
 		inputPath = argv[1];
 		outputPath = argv[2];
 		metodo = atoi(argv[3]);
-		cout << "Input: " << inputPath << endl;
-		cout << "Output: " << outputPath << endl;
-		cout << "Metodo: " << metodo << endl;
-		if (!(metodo == 0 || metodo == 1))
+		if (!(metodo == 0 || metodo == 1 || metodo == 2))
 			return 1;
 	}
 		
@@ -67,7 +63,7 @@ int main(int argc, char * argv[]){
 	// 	}
 	// 	cout << "\n";
 	// }
-
+	unsigned long long int ciclos = 0;
 	if(metodo<2){
 		matriz matrix = matriz(equipos, equipos + 1);
 		completeColleyMatrix(matrix, allTheGames, equipos);
@@ -75,11 +71,7 @@ int main(int argc, char * argv[]){
 		std::chrono::time_point<std::chrono::system_clock> start, end;
 		map<int, double> resultado_equipos;
 		if(metodo==0){
-			cout << "entring gaussianElimination" << endl;
-			start = std::chrono::system_clock::now();
-			matrix.gaussianElimination();
-			end = std::chrono::system_clock::now();
-			cout << "exiting gaussianElimination" << endl;
+			ciclos = matrix.gaussianElimination();
 			// Resuelvo el sistema de ecuaciones
 			vector<double> b(matrix.filas());
 			for (int i = 0; i<b.size(); ++i) {
@@ -91,11 +83,7 @@ int main(int argc, char * argv[]){
 			}
 		}
 		else{
-			cout << "entring choleskyDecomposition" << endl;
-			start = std::chrono::system_clock::now();
-			matrix.choleskyDecomposition();
-			end = std::chrono::system_clock::now();
-			cout << "exiting choleskyDecomposition" << endl;
+			ciclos = matrix.choleskyDecomposition();
 			// Resuelvo el sistema de ecuaciones
 			// L * Lt * x = b
 			// (2) Lt * x = y
@@ -117,12 +105,11 @@ int main(int argc, char * argv[]){
 		for (auto res_e : resultado_equipos) {
 			output << res_e.second << endl;
 		}
-		//matrix.print(cout);
-		cout << "Time elapsed: " << chrono::duration_cast<std::chrono::microseconds>(end - start).count() << " microseconds" << endl;
+		//matrix.print(cout);	
 	}else{
-		wp(allTheGames, equipos, output);
+		ciclos = wp(allTheGames, equipos, output);
 	}
-
+	cout << ciclos << endl;
 	input.close();
 	output.close();
 	for (int i = 0; i < allTheGames.size(); ++i)
@@ -175,7 +162,8 @@ void completeColleyMatrix(matriz &mat, vector<int*> allTheGames, int equipos){
 }
 
 
-void wp(vector<int*> allTheGames, int cantEquipos, ofstream &out){
+unsigned long long int wp(vector<int*> allTheGames, int cantEquipos, ofstream &out){
+	unsigned long long int t1 = rdtsc();
 	vector<pair<double, double> > v;
 	v.reserve(cantEquipos+1);
 	for (int i = 0; i <= cantEquipos; ++i)
@@ -199,4 +187,5 @@ void wp(vector<int*> allTheGames, int cantEquipos, ofstream &out){
 	{
 		out << cantEquipos-i+1 << ".  " << v[i].second << "  "  << v[i].first << endl; 
 	}
+	return rdtsc()-t1;
 }

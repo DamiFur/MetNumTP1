@@ -9,6 +9,13 @@ using namespace std;
     extern double asmsqrt(double *x);
 }*/
 
+static __inline__ unsigned long long rdtsc(void)
+{
+    unsigned hi, lo;
+    __asm__ __volatile__ ("rdtsc" : "=a"(lo), "=d"(hi));
+    return ( (unsigned long long)lo)|( ((unsigned long long)hi)<<32 );
+}
+
 const int MAX_RESERVE_MATRIX = 1024;
  
 struct pointer
@@ -29,9 +36,9 @@ private:
     int columns;
     vector<pointer> fila;
 public:
-    void gaussianElimination();
-    void sparseGaussianElimination();
-    void choleskyDecomposition();
+    unsigned long long int gaussianElimination();
+    unsigned long long int sparseGaussianElimination();
+    unsigned long long int choleskyDecomposition();
     void print(ofstream &out);
     void print(ostream &out);
     vector<double> resolver_sistema_inferior(vector<double> b);
@@ -95,7 +102,8 @@ public:
 
 };
 
-void matriz::gaussianElimination(){
+unsigned long long int matriz::gaussianElimination(){
+    unsigned long long int t1 = rdtsc();
     int iteraciones = min(this->columnas(), this->filas());
     for (int i = 0; i < iteraciones; ++i)
     {
@@ -121,9 +129,11 @@ void matriz::gaussianElimination(){
             }
         }
     }
+    return rdtsc()-t1;
 }
  
-void matriz::sparseGaussianElimination(){
+unsigned long long int matriz::sparseGaussianElimination(){
+    unsigned long long int t1 = rdtsc();
     int iteraciones = min(this->columnas(), this->filas());
     for (int i = 0; i < iteraciones; ++i)
     {
@@ -147,11 +157,13 @@ void matriz::sparseGaussianElimination(){
             this->erase(j, i);
         }
     }
+    return rdtsc()-t1;
 }
 
 
 
-void matriz::choleskyDecomposition(){
+unsigned long long int matriz::choleskyDecomposition(){
+    unsigned long long int t1 = rdtsc();
     for (int i = 0; i < this->filas(); ++i)
     {
 //        double diag = asmsqrt(&this->fila[i][i]);
@@ -171,6 +183,7 @@ void matriz::choleskyDecomposition(){
             (*this)[l][k] = (*this)[k][l];
         }
     }
+    return rdtsc()-t1;
 }
 
 
