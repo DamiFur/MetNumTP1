@@ -18,6 +18,7 @@ os.system('g++ ../TP1.cpp -O2 -std=c++11 -o ../TP1')
 
 # Corro el test con los 3 algoritmos
 nro_test = 1
+x = ciclos_gaussian = ciclos_cholesky = ciclos_wp = []
 for test in ARCHIVO_TEST:
     x.append(nro_test)
     nro_test += 1
@@ -32,4 +33,10 @@ for test in ARCHIVO_TEST:
     ciclos_wp.append(leer_ciclos())
 
 # Genero el grafico
-plt.xlabel
+plt.plot(x, ciclos_gaussian, 'bo', label='Gaussian Elimination')
+plt.plot(x, ciclos_cholesky, 'go', label='Cholesky')
+plt.plot(x, ciclos_wp, 'ro', label='Winning Percentage')
+plt.xlabel('Tests')
+plt.ylabel('Ciclos')
+plt.savefig('test_ciclos.png')
+plt.show()
