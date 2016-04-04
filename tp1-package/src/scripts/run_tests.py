@@ -4,6 +4,7 @@ import os
 import time
 import math
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 
 def divl(lista, divs, n):
     sol = []
@@ -20,14 +21,13 @@ def divllog(lista, divs):
        sol.append(lista[i]/(divs[i]*math.log((divs[i]), 2)))
     return sol
 
-
 archivo_ciclos_cholesky = 'chol.txt'
 archivo_ciclos_gauss = 'gauss.txt'
 archivo_ciclos_wp = 'wp.txt'
 
 #def leer_ciclos(archivo):
     
-iteraciones = 120
+iteraciones = 80
 
 # Compilo por las dudas
 os.system('g++ ../TP1.cpp -O2 -std=c++11 -march=native ../sqrt.o -o ../TP1')
@@ -60,45 +60,50 @@ for i in range(15,iteraciones+1):
     ciclos_wp.append(int(f_wp.readline()))
     ciclos_cholesky.append(int(f_chol.readline()))
 
-#print(ciclos_gaussian)
-#print(ciclos_cholesky)
-
 # Genero el grafico
 plt.plot(x, ciclos_gaussian, 'bo',  x, ciclos_cholesky, 'go', x, ciclos_wp, 'ro')
-#plt.plot(x, ciclos_gaussian, 'bo')
-#plt.plot(x, ciclos_cholesky, 'go')
-#splt.plot(x, ciclos_wp, 'ro', label='Winning Percentage')
-plt.xlabel('Tests')
+blue_patch = mpatches.Patch(color='blue', label='Gaussian')
+green_patch = mpatches.Patch(color='green', label='Cholesky')
+red_patch = mpatches.Patch(color='red', label='Winning Percentage')
+plt.legend(handles=[blue_patch, green_patch, red_patch])
+plt.xlabel('Cantidad de equipos')
 plt.ylabel('Ciclos')
 plt.savefig('test_ciclos.png')
 #plt.show()
 
+
 plt.close()
 
 plt.plot(x, divl(ciclos_gaussian, x, 2), 'bo', x, divl(ciclos_gaussian, x, 3), 'go', x, divl(ciclos_gaussian, x, 4), 'ro')
-#plt.plot(x, ciclos_gaussian, 'bo')
-#plt.plot(x, ciclos_cholesky, 'go')
-#splt.plot(x, ciclos_wp, 'ro', label='Winning Percentage')
-plt.xlabel('Tests')
+blue_patch = mpatches.Patch(color='blue', label='x=n^2')
+green_patch = mpatches.Patch(color='green', label='x=n^3')
+red_patch = mpatches.Patch(color='red', label='x=n^4')
+plt.legend(handles=[blue_patch, green_patch, red_patch])
+plt.xlabel('Ciclos/x')
 plt.ylabel('Ciclos')
 plt.savefig('complejidad_gaussian.png')
+
 
 plt.close()
 
 plt.plot(x, divl(ciclos_cholesky, x, 2), 'bo', x, divl(ciclos_cholesky, x, 3), 'go', x, divl(ciclos_cholesky, x, 4), 'ro')
-#plt.plot(x, ciclos_gaussian, 'bo')
-#plt.plot(x, ciclos_cholesky, 'go')
-#splt.plot(x, ciclos_wp, 'ro', label='Winning Percentage')
-plt.xlabel('Tests')
+blue_patch = mpatches.Patch(color='blue', label='x=n^2')
+green_patch = mpatches.Patch(color='green', label='x=n^3')
+red_patch = mpatches.Patch(color='red', label='x=n^4')
+plt.legend(handles=[blue_patch, green_patch, red_patch])
+plt.xlabel('Ciclos/x')
 plt.ylabel('Ciclos')
 plt.savefig('complejidad_cholesky.png')
 
 plt.close()
 
-plt.plot(x, divl(ciclos_wp, x, 1), 'bo', x, divllog(ciclos_wp, x), 'go', x, divl(ciclos_wp, x, 2), 'ro')
-#plt.plot(x, ciclos_gaussian, 'bo')
-#plt.plot(x, ciclos_cholesky, 'go')
-#splt.plot(x, ciclos_wp, 'ro', label='Winning Percentage')
-plt.xlabel('Tests')
+plt.plot(x, divl(ciclos_wp, x, 1), 'bo', label='n')
+plt.plot(x, divllog(ciclos_wp, x), 'go', label='n*logn')
+plt.plot(x, divl(ciclos_wp, x, 2), 'ro', label='n^2')
+blue_patch = mpatches.Patch(color='blue', label='x=n')
+green_patch = mpatches.Patch(color='green', label='x=n*log(n)')
+red_patch = mpatches.Patch(color='red', label='x=n^2')
+plt.legend(handles=[blue_patch, green_patch, red_patch])
+plt.xlabel('Ciclos/x')
 plt.ylabel('Ciclos')
 plt.savefig('complejidad_wp.png')
