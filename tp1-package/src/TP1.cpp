@@ -23,7 +23,7 @@ int main(int argc, char * argv[]){
 		cin >> inputPath;
 		cout << "Output: ";
 		cin >> outputPath; 
-		cout << "Metodo (0|1): ";
+		cout << "Metodo (0|1|2): ";
 		cin >> metodo;
 	} else {
 		inputPath = argv[1];
@@ -71,7 +71,7 @@ int main(int argc, char * argv[]){
 		std::chrono::time_point<std::chrono::system_clock> start, end;
 		map<int, double> resultado_equipos;
 		if(metodo==0){
-			ciclos = matrix.gaussianElimination();
+			ciclos = matrix.sparseGaussianElimination();
 			// Resuelvo el sistema de ecuaciones
 			vector<double> b(matrix.filas());
 			for (int i = 0; i<b.size(); ++i) {
@@ -178,14 +178,6 @@ unsigned long long int wp(vector<int*> allTheGames, int cantEquipos, ofstream &o
 			v[allTheGames[i][3]].first++;
 	}
 	for (int i = 1; i <= cantEquipos; ++i)
-	{
-		v[i].first /= v[i].second;
-		v[i].second = i;
-	}
-	sort(v.begin(), v.end());
-	for (int i = cantEquipos; i; --i)
-	{
-		out << cantEquipos-i+1 << ".  " << v[i].second << "  "  << v[i].first << endl; 
-	}
+		out << v[i].first/v[i].second << endl; 
 	return rdtsc()-t1;
 }
