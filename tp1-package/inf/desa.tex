@@ -1,0 +1,206 @@
+\section{Desarrollo}
+
+\subsection{Discusión Teórica}
+
+Para efectuar los análisis del método de la matriz de Colley (CMM), se asume que ambos métodos de resolución: Eliminación Gaussiana (EG) y Factorización de Cholesky (CL) funcionan siempre. 
+
+Es sabido que no todas las matrices admiten CL o el algoritmo EG y la implementación de ambos métodos en este Trabajo Práctico es fiel a los algoritmos presentados, con lo cual si la asunción previa no se cumple, las corridas que dan base a la experimentación serían indeterminadas (cuelgues de máquina o generación de resultados basura).
+
+La justificación de que la asunción se cumple viene dada por el hecho de que la matriz de Colley desde su armado es simetrica definida positiva, como está explicado en el paper ''Colley's Bias Free College Football Ranking Method: The Colley Matrix Explained''  de W. Colley, sección 7.2
+
+\begin{itemize}
+
+\item SDP $\implies$ A inversible y todas las submatrices principales de A inversibles $\implies$ A tiene factorización LU
+
+\item La factorización LU tal que L tenga 1s en su diagonal es unica
+
+\end{itemize}
+
+Si es única, debe ser la factorización obtenida por el algoritmo de elimincación Gaussiana, dado que esta tiene 1s en su diagonal.
+
+Propiedad: Sea \(A \in \mathbb{R}^{n \times n}\) Simétrica Definida Positiva \(\implies A\) No singular.
+
+Demostración: Queremos ver que $A$ es No Singular y que todas las submatrices principales de $A$ son No Singulares
+
+\begin{itemize}
+
+\item Supongamos que $A$ es Singular \(\implies \exists \tilde{x} \) tq \(A\tilde{x} = 0 \) con \(\tilde{x} \neq 0 \)
+
+\begin{equation}
+\tilde{x}^{T}\underbrace{A\tilde{x}}_{0} = 0 \text{\hspace{3em} Abs! porque $A$ es S.D.P \hspace{1em}} (x^{T}Ax > 0 \hspace{1em}\forall x \neq 0)
+\end{equation}
+
+
+Luego $A$ es No Singular
+
+\item Sea $A_{k}$ la submatriz principal $\mathbb{R}^{k\times k}$ de $A \in \mathbb{R}^{n \times n}$
+
+Supongo que $A_{k}$ es singular (No inversible)
+
+\[\text{Sea } \bar{x_{k}} \in \mathbb{R}^{k} \text{tq } A_{k} \bar{x_{k}} = 0  \land \bar{x_{k}} \neq 0 \]
+
+\[ \text{Sea } \bar{x} = \begin{pmatrix} \bar{x_{k}} \\ 0 \\ \vdots \\ 0 \end{pmatrix} \in \mathbb{R}^{n} \]
+
+\begin{equation}
+ \bar{x}^{T} A \bar{x} = \begin{pmatrix} \bar{x_{k}} & 0 & \cdots & 0 \end{pmatrix}
+  \begin{blockarray}{ccccc|cccc}
+    \begin{block}{(ccccc|cccc@{\hspace*{5pt}})}
+	\BAmulticolumn{5}{c|}{\multirow{5}{*}{$A_{k}$}}&\BAmulticolumn{4}{c}{\multirow{5}{*}{}}\\
+    &&&&&&&\\
+    &&&&&&&\\
+    &&&&&&&\\
+    &&&&&&&\\
+    \cline{1-5}% don't use \hline
+    \BAmulticolumn{5}{c}{\multirow{4}{*}{}}&\BAmulticolumn{4}{c}{\multirow{4}{*}{}}\\
+    \BAmulticolumn{5}{c}{\multirow{4}{*}{}}&\BAmulticolumn{4}{c}{\multirow{4}{*}{}}\\
+    \BAmulticolumn{5}{c}{\multirow{4}{*}{}}&\BAmulticolumn{4}{c}{\multirow{4}{*}{}}\\
+    \BAmulticolumn{5}{c}{\multirow{4}{*}{}}&\BAmulticolumn{4}{c}{\multirow{4}{*}{}}\\
+    \end{block}
+  \end{blockarray}
+  \begin{pmatrix} \bar{x_{k}} \\ 0 \\ \vdots \\ 0 \end{pmatrix} =
+  \begin{pmatrix} \bar{x_{k}} & 0 & \cdots & 0 \end{pmatrix}   \ \begin{pmatrix} 0 \\ \vdots \\ 0 \\ * \\ \vdots \\ * \end{pmatrix} = 0
+\end{equation}
+\[\text{Abs! pues } A \text{es SDP y } \bar{x} = \begin{pmatrix} \bar{x_{k}} \\ 0 \\ \vdots \\ 0 \end{pmatrix} \neq 0\]
+
+O sea toda $A \in \mathbb{R}^{n \times n}$ SDP tiene todas sus submatrices principales no singulares y $A$ es no singular \qed
+
+\end{itemize}
+
+Propiedad: Sea $A \in \mathbb{R}^{n \times n}$ $A$ inversible (no singular), si las submatrices principales de $A$ son no singulares $\implies$ $A = L U$
+
+Demostración: (x inducción)
+
+\begin{itemize}
+	\item $n = 2$
+	
+	Las hipótesis son:
+	\[ A = \begin{pmatrix} a_{1,1} & a_{1,2} \\ a_{2,1} & a_{2,2} \end{pmatrix} \hspace{5em}A \text{ No Singular}\]
+	\[ A_{1,1} = \begin{pmatrix} a_{1,1} \end{pmatrix} \hspace{5em}A_{1,1} \text{ No Singular} \]
+	
+	Ya que la submatriz principal de orden $1$ es $ A_{1,1} = \begin{pmatrix} a_{1,1} \end{pmatrix} $ (la única submatriz principal). Para ser No Singular debe cumplirse $a_{1,1} \neq 0$
+	
+	Al ser $a_{1,1} \neq 0$ puedo aplicar el algoritmo EG sobre $A$
+	\[F_2 - \frac{a_{2,1}}{a_{1,1}} F_1 \]
+	Con esto consigo una factorización $LU$: $A = LU$.
+	
+	Luego para el caso base $n = 2$ se verifica la tésis.
+	
+	\item $n \implies n+1$
+	
+	\[A = 
+	\begin{blockarray}{cccc|c}
+    \begin{block}{(cccc@{\hspace*{45pt}}|c@{\hspace*{5pt}})}
+    \BAmulticolumn{4}{c|}{\multirow{4}{*}{$A^{(n)}$}}&\BAmulticolumn{1}{c}{\multirow{4}{*}{$c_{n+1}$}}\\
+	&&&&\\
+    &&&&\\
+    &&&&\\
+    \cline{1-5}% don't use \hline
+    \BAmulticolumn{4}{c|}{f_{n+1}}&a_{(n+1)(n+1)} \\
+    \end{block}
+  \end{blockarray}
+  \hspace{5em} A \in \mathbb{R}^{(n+1)\times(n+1)} 
+  \]
+  \[ A^{(n)} = L^{(n)}U^{(n)}\]
+  Propongo
+  \[ L =
+  \begin{blockarray}{cccc|c}
+    \begin{block}{(cccc@{\hspace*{45pt}}|c@{\hspace*{5pt}})}
+    \BAmulticolumn{4}{c|}{\multirow{4}{*}{$L^{(n)}$}}&0 \\
+	&&&& 0\\
+    &&&& \vdots\\
+    &&&& 0\\
+    \cline{1-5}% don't use \hline
+    \BAmulticolumn{4}{c|}{l_{n+1}}& 1 \\
+    \end{block}
+  \end{blockarray}
+  \hspace{7em}
+  U =
+  \begin{blockarray}{cccc|c}
+    \begin{block}{(cccc|c@{\hspace*{5pt}})}
+    \BAmulticolumn{4}{c|}{\multirow{4}{*}{$U^{(n)}$}}&\BAmulticolumn{1}{c}{\multirow{4}{*}{$u_{n+1}$}}\\
+	&&&&\\
+    &&&&\\
+    &&&&\\
+    \cline{1-5}% don't use \hline
+    0 & 0 & \cdots & 0 & u_{(n+1)(n+1)} \\
+    \end{block}
+  \end{blockarray}
+  \]
+  
+  \[ A = L^{(n+1)} U^{(n+1)} \]
+  
+  \[
+  \begin{blockarray}{cccc|c}
+    \begin{block}{(cccc@{\hspace*{45pt}}|c@{\hspace*{5pt}})}
+    \BAmulticolumn{4}{c|}{\multirow{4}{*}{$A^{(n)}$}}&\BAmulticolumn{1}{c}{\multirow{4}{*}{$c_{n+1}$}}\\
+	&&&&\\
+    &&&&\\
+    &&&&\\
+    \cline{1-5}% don't use \hline
+    \BAmulticolumn{4}{c|}{f_{n+1}}&a_{(n+1)(n+1)} \\
+    \end{block}
+  \end{blockarray}
+  =
+  \begin{blockarray}{cccc|c}
+    \begin{block}{(cccc@{\hspace*{45pt}}|c@{\hspace*{5pt}})}
+    \BAmulticolumn{4}{c|}{\multirow{4}{*}{$L^{(n)}$}}&0 \\
+	&&&& 0\\
+    &&&& \vdots\\
+    &&&& 0\\
+    \cline{1-5}% don't use \hline
+    \BAmulticolumn{4}{c|}{l_{n+1}}& 1 \\
+    \end{block}
+  \end{blockarray}
+  \hspace{1em}
+  \begin{blockarray}{cccc|c}
+    \begin{block}{(cccc|c@{\hspace*{5pt}})}
+    \BAmulticolumn{4}{c|}{\multirow{4}{*}{$U^{(n)}$}}&\BAmulticolumn{1}{c}{\multirow{4}{*}{$u_{n+1}$}}\\
+	&&&&\\
+    &&&&\\
+    &&&&\\
+    \cline{1-5}% don't use \hline
+    0 & 0 & \cdots & 0 & u_{(n+1)(n+1)} \\
+    \end{block}
+  \end{blockarray}
+  \]
+  
+  Resolviendo Por bloques tenemos:
+  
+  \[ L^{(n)} U^{(n)} = A^{(n)} \]
+  \[ L^{(n)} u_{n+1} = c_{n+1} \]
+  \[ f_{n+1} = l_{n+1} + U^{(n)} \]
+  \[ l_{(n+1)} u_{(n+1)} + u_{(n+1)(n+1)} = a_{(n+1)(n+1)} \]
+\qed
+
+\end{itemize}
+
+Ya demostramos que por ser $A$ SDP, $A$ tiene factorizacion LU, ademas demostramos que tanto $A$ como todas sus submatrices principales son inversibles. Nos falta demostrar que esta factorizacion es unica bajo ciertas condiciones.
+Queremos llegar a que la matriz de Colley admite el metodo EG, sabemos que el algoritmo nos obtiene dos matrices $L$ y $U$ donde $L$ es una matriz triangular inferior con unos en la diagonal y $U$ es una matriz triangular superior.
+Intentemos probar que si $A$ es No Singular (inversible), con factorizacion $A = LU$ y exigimos que $L$ tenga unos en la diagonal, bajo estas condiciones la factorizacion $LU$ es unica.
+
+Hipotesis:
+\begin{itemize}
+
+	\item $A$ es inversible
+	\item $L$ es una matriz triangular inferior con unos en la diagonal
+	\item $L'$ es una matriz triangular inferior con unos en la diagonal
+	
+	\[ A = LU = L'U' \]
+	\[U = L^{-1} L' U' \]
+	\[ \underbrace{U U'^{-1}}_{\text{triangulares superiores}} = \underbrace{L^{-1} L'}_{\text{triangulares inferiores}} = D \]
+	\[ L' = L D \]
+	luego 
+	\[ D = I \]
+	\[ L^{-1} L' = I \]
+	\[ L = L'\]
+	\[ U = U' \]
+\qed
+\end{itemize}
+
+
+
+
+
+\subsection{Heurística para maximizar posición minimizando partidos ganados}
+
+Se propone como heurística: ''Jugar con los equipos más fuertes de la tabla''. La idea es que si juego contra equipos de ranking alto y pierdo, mi ranking no disminuye tanto como si jugara con equipos más débiles, y en el caso de ganarles mi ranking aumentaría más que si le gano a equipos débiles. (Experimentar)
