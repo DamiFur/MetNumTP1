@@ -1,14 +1,16 @@
 #include <vector>
 #include <iostream>
+#include <fstream>
 #include <unordered_map>
 #include <algorithm>
+#include "matriz.h"
  
 using namespace std;
 
 /*extern "C"{
     extern double asmsqrt(double *x);
 }*/
-
+/*
 static __inline__ unsigned long long rdtsc(void)
 {
     unsigned hi, lo;
@@ -28,79 +30,63 @@ struct pointer
         return col->count(i);
     }
 }__attribute__((packed));
- 
-class matriz
-{
-private:
-    int fils;
-    int columns;
-    vector<pointer> fila;
-public:
-    unsigned long long int gaussianElimination();
-    unsigned long long int sparseGaussianElimination();
-    unsigned long long int choleskyDecomposition();
-    void print(ofstream &out);
-    void print(ostream &out);
-    vector<double> resolver_sistema_inferior(vector<double> b);
-    vector<double> resolver_sistema_superior(vector<double> b);
-    ~matriz(){
-        for (int i = 0; i < fila.size(); ++i)
-            {
-                delete fila[i].col;
-            }
-    };
-    matriz(int i, int j){
-        fila.reserve(i);
-        fils = i;
-        columns = j;
-        for (int x = 0; x < i; ++x)
-        {
-            pointer tmp;
-            tmp.col = new unordered_map<int, double>;
-            tmp.col->reserve(min(j, MAX_RESERVE_MATRIX));
-            fila.push_back(tmp);
-        }
-        return;
-    };
-    matriz(vector<int> &v, int j){
-        fila.reserve(v.size());
-        fils = v.size();
-        columns = j;
-        for (int x = 0; x < v.size(); ++x)
-        {
-            pointer tmp;
-            tmp.col = new unordered_map<int, double>;
-            tmp.col->reserve(v[x]);
-            fila.push_back(tmp);
-        }
-        return;
-    }
-    pointer &operator[](int i){
-        return fila[i];
-    };
-    bool check(int i, int j){
-        return fila[i].col->count(j);
-    }
-    void erase(int i, int j){
-        fila[i].col->erase(j);
-    }
-    unordered_map<int, double>::iterator begin(int i){
-        return fila[i].col->begin();
-    }
-    unordered_map<int, double>::iterator end(int i){
-        return fila[i].col->end();
-    }
- 
-    void swapFilas(int a, int b){
-        pointer c = fila[a];
-        fila[a] = fila[b];
-        fila[b] = c;
-    }
-    int filas(){return fils;}
-    int columnas(){return columns;}
-
-
+*/ 
+matriz::~matriz(){ 
+	for (int i = 0; i < fila.size(); ++i) 
+	{ 
+		delete fila[i].col; 
+	} 
 };
+matriz::matriz(int i, int j){ 
+	fila.reserve(i); 
+	fils = i; 
+	columns = j; 
+	for (int x = 0; x < i; ++x) 
+	{ 
+		pointer tmp; 
+		tmp.col = new unordered_map<int, double>; 
+		tmp.col->reserve(min(j, MAX_RESERVE_MATRIX)); 
+		fila.push_back(tmp); 
+	} 
+	return; 
+};
+matriz::matriz(vector<int> &v, int j){ 
+	fila.reserve(v.size()); 
+	fils = v.size(); 
+	columns = j; 
+	for (int x = 0; x < v.size(); ++x) 
+	{ 
+		pointer tmp; 
+		tmp.col = new unordered_map<int, double>; 
+		tmp.col->reserve(v[x]); 
+		fila.push_back(tmp); 
+	} 
+	return; 
+}
+pointer & matriz::operator[](int i){ 
+	return fila[i]; 
+};
+bool matriz::check(int i, int j){ 
+	return fila[i].col->count(j); 
+}
+void matriz::erase(int i, int j){ 
+	fila[i].col->erase(j); 
+}
+unordered_map<int, double>::iterator matriz::begin(int i){ 
+	return fila[i].col->begin(); 
+}
+unordered_map<int, double>::iterator matriz::end(int i){ 
+	return fila[i].col->end(); 
+}
+ 
+void matriz::swapFilas(int a, int b){ 	
+	pointer c = fila[a]; 
+	fila[a] = fila[b]; 
+	fila[b] = c; 
+}
+int matriz::filas(){return fils;} 
+
+int matriz::columnas(){return columns;}
 
 unsigned long long int matriz::gaussianElimination(){
     unsigned long long int t1 = rdtsc();
@@ -192,7 +178,7 @@ void matriz::print(ofstream &out){
         for (int j = 0; j < this->columnas(); ++j)
         {
             if(this->check(i, j))
-                out << (*this)[i][j] << "\t\t";
+                out << ((*this)[i][j]) << "\t\t";
             else
                 out << 0 << "\t\t";
         }

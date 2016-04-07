@@ -5,7 +5,7 @@
 #include <chrono>
 #include <ctime>
 #include <map>
-#include "matriz.cpp"
+#include "matriz.h"
 
 using namespace std;
 
