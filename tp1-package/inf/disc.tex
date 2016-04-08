@@ -81,6 +81,79 @@ Olimpo &	0.185823 \\
 Podemos notar diferencias entre ambas tablas y formas de calculo. La principal, es que el metodo de "3-1-0" utilizado en el torneo de futbol argentina, no tiene en cuenta el peso del calendario. Es decir, da lo mismo ganarle al ultimo de la tabla o al primero. Tambi\'en se puede observar como el resultado entre dos equipos afecta al resto. Por ejemplo, Atletico Tucuman se ubica en un ranking mas alto que San Lorenzo, y tiene que ver con los partidos de cada uno.\\
 Nos parece que el metodo de Colley en este tipo de casos, en donde no se enfrentaron todos los equipos entre si, es una medici\'on justa, pues utiliza la informaci\'on disponible de manera de poder comparar equipos que nunca jugaron entre si a trav\'es de ub resultado de un tercero.
 
+\subsection{Justicia}
+
+Se nos propone pensar sobre la justicia del m\'etodo o dicho de otra manera conjeturar y experimentar sobre si el resultado de un partido entre dos equipos afecte indirectamente el ranking de un tercero.
+
+
+Por supuesto que esto depende del concepto de justicia que uno defina. Siguiendo el desarrollo te\'orico del m\'etodo CMM se da a entender que precisamente es justo que el resultado de un partido entre dos equipos afecte a un tercero, dado que el m\'etodo tiene en cuenta el factor ''Fuerza de calendario'', esto es, que el cambio de resultado en un partido entre dos equipos, da vuelta el porcentual ganado por cada uno de ellos, luego cualquier tercer equipo que juegue contra el que haya ganado, en caso de ganar tendrá un porcentual mayor y en caso de perder perdera un porcentual menor de su ranking (y viceversa para los que jueguen contra el que perdió al cambiar el resultado).
+
+
+Esto es porque los rankings se calculan simultaneamente. Un experimento sencillo es usar uno de los casos de test provistos por la catedra ''test1.in'' y cambiar un resultado quedando asi:
+
+
+\begin{tabular}{lll}
+
+	test1.1.in & \hspace{5em} & test1.2.in \\
+
+	6 13 & \hspace{5em} & 6 13 \\
+
+	1 1 16 4 13 & \hspace{5em} & 1 1 16 4 13 \\
+
+	1 2 38 5 17 & \hspace{5em} & 1 2 17 5 38 \\
+
+	1 2 0 6 1 & \hspace{5em} & 1 2 0 6 1 \\
+
+	1 3 34 1 21 & \hspace{5em} & 1 3 34 1 21 \\
+
+	1 3 23 4 10 & \hspace{5em} & 1 3 23 4 10 \\
+
+	1 4 31 1 6 & \hspace{5em} & 1 4 31 1 6 \\
+
+	1 5 0 6 1 & \hspace{5em} & 1 5 0 6 1 \\
+
+	1 5 38 4 23 & \hspace{5em} & 1 5 38 4 23 \\
+
+	1 6 1 2 0 & \hspace{5em} & 1 6 1 2 0 \\
+
+	1 6 1 5 0 & \hspace{5em} & 1 6 1 5 0 \\
+
+	1 4 1 6 0 & \hspace{5em} & 1 4 1 6 0 \\
+
+	1 3 1 1 0 & \hspace{5em} & 1 3 1 1 0 \\
+
+	1 3 1 2 0 & \hspace{5em} & 1 3 1 2 0 
+
+\end{tabular} 
+
+
+Puede verse que se di\'o vuelta el resultado del segundo partido de la fecha 1 donde juegan los equipos 2 y 5
+
+
+Los resultados son respectivamente:
+
+
+\begin{tabular}{lll}
+
+test1.1.out & \hspace{5em} & test1.2.out \\
+
+0.404122	& \hspace{5em} &	0.402926	\\
+
+0.398803	& \hspace{5em} &	0.253989	\\
+
+0.774202	& \hspace{5em} &	0.75266	\\
+
+0.438165	& \hspace{5em} &	0.456117	\\
+
+0.350798	& \hspace{5em} &	0.49734	\\
+
+0.63391		& \hspace{5em} &	0.636968	\\
+
+\end{tabular}
+
+
+Y aqui puede observarse que los rankings de todos los equipos cambian
+
 \subsection{Heur\'istica para obtener mayor posici\'on posible}
 
 El enunciado nos pide pensar una estrategia (o heur\'istica) para obtener la mayor posici\'on posible, buscando minimizar el n\'umero de partidos ganados. La entrada de nuestro algoritmo, son todos los partidos en la competencia y un equipo en particular en el cual podemos decidir si un partido lo gan\'o o lo perdi\'o. Luego de ver los distintos resultados que tuvimos analizando casos, se nos ocurri\'o las siguientes dos heur\'isticas que compararemos entre si:\\
