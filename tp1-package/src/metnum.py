@@ -15,6 +15,7 @@ def compile():
 
 def link():
   objects = [s+'.o' for s in sources]
+  objects.append('sqrt.o');
   run(compiler, '-o', executable, objects)
 
 def clean():
