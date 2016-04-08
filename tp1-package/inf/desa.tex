@@ -281,7 +281,6 @@ Luego la factorizacion $LU$ tal que $L$ tenga unos en su diagonal es unica.
 
 
 
-<<<<<<< HEAD
 
 
 \subsection{Heurística para maximizar posición minimizando partidos ganados}
@@ -305,7 +304,7 @@ Para resolver el sistema planteado por la matriz de colley implementamos dos alg
 
 El algoritmo de eliminación gaussiana parte de una matriz A que representa un sistema de ecuaciones lineales, a esta le aplica operaciones de filas para llevarla a un sistema triangular superior, el cual puede ser resuelto facilmente utilizando backward substitution. Para lograr esto primero le resta la fila 1 multiplicada por un numero $k_i$ a todas las otras i filas que se encuentran debajo. $k_i$ va a ser el numero que haga que después de la resta, en la posición (i,1) haya un cero. Luego de i iteraciones, debajo de la posición (1,1) va a haber todos ceros. Este proceso debe repetirse con las i filas restantes, cada una logrando que en la columna i, debajo de la posición (i,i) haya solo 0s. En una matriz cuadrada de dimensión n, el algoritmo blanquea n columnas, cada una teniendo que hacer n restas de filas. Como cada resta entre filas tiene un costo computacional lineal, el algoritmo termina teniendo una complejidad asintótica de $O(n^3)$. Cabe destacar que si a una fila $L_i$ le restamos un multiplo de otra fila $L_k$, las columnas en donde $L_k$ tiene ceros no se van a ver afectadas en $L_i$. Por lo tanto como usamos hash_maps para representar las filas, en cada resta podemos iterar solo sobre los elementos que se van a ver afectados. Debajo dejamos el pseudocódigo del algoritmo implementado.
 
-\begin{codesnippet}
+\begin{verbatim}
 Gaussian Elimination$(A^{n*m})$:\\
 \tab Para i de 1 hasta Min(n, m)\\
 \tab \tab Para j de i+1 hasta n\\
@@ -313,7 +312,7 @@ Gaussian Elimination$(A^{n*m})$:\\
 \tab \tab \tab Para k de i+1 hasta m\\
 \tab \tab \tab \tab $A_{jk} = A_{jk}-A_{ik}$*pivot\\
 
-\end{codesnippet}
+\end{verbatim}
 
 \subsubsection{Cholesky Decomposition}
 
@@ -323,18 +322,18 @@ La factorización de cholesky es un algoritmo solo aplicable a matrices simétri
 
 Siendo $a_{11}$ el elemento de la posición (1,1) de A, $A_{21}$ una matriz de (n-1)*1, y $A_{22}$ una matriz de (n-1)*(n-1). Por lo tanto podemos desarrollar el siguiente algoritmo recursivo:
 
-\begin{codesnippet}
+\begin{verbatim}
 
     $Cholesky(A^{n*n})$:\\
     \tab $l_{11} =  \sqrt[2]{a_{11}}$ \\
     \tab $si$ $n > 1$ \\
     \tab \tab $L_{21} =  A_{21}/l_{11}$ \\
     \tab \tab $L_{22} =  Cholesky(A_{22}-L_{21}$*$L_{21}^{T})$ \\
-\end{codesnippet}
+\end{verbatim}
 
 Como se efectúan n llamados recursivos, y en cada uno se hace una resta de matrices, la complejidad asintótica total del algoritmo es $O(n^3)$. A la hora de implementarlo eliminamos la recursión, reemplazandola por un approach iterativo, que es más eficiente. Por lo tanto el algoritmo final quedó así:
 
-\begin{codesnippet}
+\begin{verbatim}
     $Cholesky(A^{n*n})$:\\
     \tab Para i de 1 hasta n: \\
     \tab \tab $A_{ii} = \sqrt[2]{A_{ii}}$ \\
@@ -343,12 +342,10 @@ Como se efectúan n llamados recursivos, y en cada uno se hace una resta de matr
     \tab \tab Para j de i+1 hasta n: \\
     \tab \tab \tab Para k de i+1 hasta j: \\
     \tab \tab \tab \tab $A_{jk} = A_{ji}*A_{ki}$ \\
-\end{codesnippet}
+\end{verbatim}
 
 En la implementación, el codigo solo necesita la parte triangular inferior de la matriz para funcionar, utilizando asi, la mitad de espacio. Por último cabe destacar que si bien la factorización de Cholesky hace menos operaciones que la de Gauss, n operaciones son raices cuadradas, que computacionalmente son mucho mas caras que sumas y restas. Por lo tanto implementamos una funcion en assembler que calcula la operación sqrt(double) por hardware. Si bien la ganancia en performance no es tanta (aprox 3$\%$), decidimos dejarla porque nos pareció un factor que esta bueno tenerlo controlado para los benchmarks.
 
-\begin{codesnippet}
-\end{codesnippet}
 
 \subsection{Benchmarks}
 
@@ -421,5 +418,3 @@ Para matrices densas las constantes eran 5 para Gaussian y 2.5 para cholesky, en
 
 Por lo tanto podemos concluir que la estructura planteada es una muy buena elección para matrices esparsas, ya que ademas de poder ahorrar mucho espacio tiene una buena performance, logrando resolver sistemas de 1000 equipos en segundos. Por otro lado, para casos densos no es una buena idea, ya que la cantidad de espacio consumida es la misma y los tiempos de acceso a los hash_maps se vuelven lentos. Es por esto que convendría hacer una heurística analizando datos estadísticos que en base a la cantidad de equipos del sistema a resolver, y al nivel de densidad de la matriz, decida si utilizar un simple array bi-dimensional o la estructura analizada en esta sección.
 
-=======
->>>>>>> volada a la mierda la heuristica de ahi
