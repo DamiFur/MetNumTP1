@@ -33,22 +33,21 @@ archivo_ciclos_gauss_sparse = 'fixed_sparse_gauss.txt'
 
 #def leer_ciclos(archivo):
     
-#iteraciones = 1000
+iteraciones = 750
 
 # Compilo por las dudas
-'''os.system('g++ ../TP1.cpp -O2 -std=c++11 -march=native ../sqrt.o -o ../TP1')
+os.system('g++ ../TP1.cpp -O2 -std=c++11 -march=native ../sqrt.o -o ../TP1')
 os.system('g++ ../sparseBenchgen.cpp -O2 -std=c++11 -march=native -o ../sparseBenchgen')
 os.system('rm ' + archivo_ciclos_chol_sparse)
-os.system('rm ' + archivo_ciclos_gauss_sparse)'''
-#os.system('rm *.txt')
-#x = ciclos_gaussian = ciclos_cholesky = ciclos_wp = []
+os.system('rm ' + archivo_ciclos_gauss_sparse)
+
 x=[]
 ciclos_gaussian=[]
 ciclos_chol=[]
 
 i = 15
 delta= 1
-'''while(i<=800):
+while(i<=iteraciones):
     os.system('../sparseBenchgen {0} 90 > fixedSparseTestCases/sparse_test{0}'.format(str(i)))
     # Corro el test con los 2 algoritmos
     
@@ -56,14 +55,14 @@ delta= 1
 
     os.system('../TP1 ' + archivo_test + ' salida.out 0 >> ' + archivo_ciclos_gauss_sparse)
     os.system('../TP1 ' + archivo_test + ' salida.out 1 >> ' + archivo_ciclos_chol_sparse)
-    i+=delta'''
+    i+=delta
 
 f_gaus = open(archivo_ciclos_gauss_sparse, 'r')
 f_chol = open(archivo_ciclos_chol_sparse, 'r')
 
 
 i = 15
-while(i<=750):
+while(i<=iteraciones):
     x.append(i)
     ciclos_gaussian.append(int(f_gaus.readline()))
     ciclos_chol.append(int(f_chol.readline()))

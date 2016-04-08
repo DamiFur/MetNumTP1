@@ -39,17 +39,19 @@ archivo_ciclos_wp = 'wp.txt'
 iteraciones = 1000
 
 # Compilo por las dudas
-#os.system('g++ ../TP1.cpp -O2 -std=c++11 -march=native ../sqrt.o -o ../TP1')
-#os.system('g++ ../benchgen.cpp -O2 -std=c++11 -march=native -o ../benchgen')
-#os.system('rm -r testCases/')
-#os.system('rm *.txt')
-#x = ciclos_gaussian = ciclos_cholesky = ciclos_wp = []
+os.system('g++ ../TP1.cpp -O2 -std=c++11 -march=native ../sqrt.o -o ../TP1')
+os.system('g++ ../benchgen.cpp -O2 -std=c++11 -march=native -o ../benchgen')
+os.system('rm ' + archivo_ciclos_wp)
+os.system('rm ' + archivo_ciclos_gauss)
+os.system('rm ' + archivo_ciclos_cholesky)
+
+
 x=[]
 ciclos_gaussian=[]
 ciclos_cholesky=[]
 ciclos_wp=[]
 
-'''for i in range(946, iteraciones):
+for i in range(15, iteraciones):
     os.system('../benchgen {0} > testCases/test{0}'.format(str(i)))
     # Corro el test con los 3 algoritmos
     
@@ -57,7 +59,7 @@ ciclos_wp=[]
 
     os.system('../TP1 ' + archivo_test + ' salida.out 0 >> ' + archivo_ciclos_gauss)
     os.system('../TP1 ' + archivo_test + ' salida.out 1 >> ' + archivo_ciclos_cholesky)    
-    os.system('../TP1 ' + archivo_test + ' salida.out 2 >> ' + archivo_ciclos_wp)'''
+    os.system('../TP1 ' + archivo_test + ' salida.out 2 >> ' + archivo_ciclos_wp)
 
 f_gaus = open(archivo_ciclos_gauss, 'r')
 f_chol = open(archivo_ciclos_cholesky, 'r')
