@@ -286,3 +286,137 @@ Luego la factorizacion $LU$ tal que $L$ tenga unos en su diagonal es unica.
 \subsection{Heurística para maximizar posición minimizando partidos ganados}
 
 Se propone como heurística: ''Jugar con los equipos más fuertes de la tabla''. La idea es que si juego contra equipos de ranking alto y pierdo, mi ranking no disminuye tanto como si jugara con equipos más débiles, y en el caso de ganarles mi ranking aumentaría más que si le gano a equipos débiles. (Experimentar)
+
+
+\section{Implementación}
+
+En esta sección pasamos a describir todo lo implementado para el TP. Luego analizamos benchmarks para mostrar el correcto funcionamiento y respaldar nuestras hipótesis sobre complejidad. Por último realizamos un experimento de errores numéricos para mostrar que los sistemas planteados por la matriz de Colley suelen ser estables. La estructura que representa la matriz y los algoritmos que operan sobre ella fueron programados íntegramente en C++11. Los benchmarks fueron realizados con un procesador Intel Core-i7 3610QM corriendo a 3Ghz, el cual contaba con 7GB de RAM DDR3-1600 disponibles. Las pruebas se ejecutaron sobre el sistema operativo Ubuntu 15.10 con Linux 4.5, plataforma que también utilizamos para compilar el proyecto con G++ 5.2.1, utilizando el flag -O2. Si bien es cierto que esto último puede alterar nuestro algoritmo al punto de que el procesador termina corriendo algo distinto a lo que pensamos, nos pareció que en una situación de uso cotidiano no habría motivo por el cual no se utilizase dicho flag, y por lo tanto optamos por realizar benchmarks que reflejen escenarios reales. Para las mediciones hicimos una función en assembler que devuelve el cycle count del procesador, luego la utilizamos al principio y al final de cada algoritmo que quisimos medir. Todos los benchmarks fueron corridos 10 veces, y los gráficos muestran el promedio de todos los resultados.
+
+\subsection{Estructura de Datos}
+
+Lo primero que tuvimos que decidir fue la estructura de datos que representa la matriz de Colley. Primero pensamos en usar un simple array bi-dimensional, es decir, un vector$<$vector$<$double$> >$. Sin embargo, recordando que la posición (i,j) de la matriz esta dada por la cantidad de partidos jugados entre los equipos i y j, nos dimos cuenta que si en algun torneo hay varios equipos que no juegan entre si, terminaríamos  teniendo una matriz esparsa con una representación que utiliza espacio en memoria para guardar ceros. Por lo tanto decidimos utilizar hash maps para representar las filas de la matriz, quedando como estructura :  vector $<$ unordered_map$<$int, double$> >$. De esta manera la posición x del vector nos devuelve un hash_map, que tiene como keys las columnas de la fila x que contienen números distintos de cero. Por último, el valor que se obtiene al buscar la key k en el hash_map con índice v en el vector, es el número de la posición (v, k) de la matriz. Para poder operar con matrices esparsas de forma eficiente, un cero en la posición (i,j) de la matriz se representa con la ausencia de la key j, en el hash_map de la posición i del vector. De esta manera no solo nos ahorramos el espacio en memoria que usaríamos para almacenar ceros, sino que nos da la posibilidad de recorrer una fila solo iterando sobre casilleros con valores distintos de 0. Esta última funcionalidad despues se va a ver que resulta especialmente útil en el algoritmo de eliminación gaussiana. El único posible problema a considerar es que todos los algoritmos de factorización asumen que acceder a una posición de la matriz tiene un costo computacional constante, y teóricamente un hash_map tiene un costo lineal en peor caso. Sin embargo los algoritmos de hasheo han evolucionado mucho en los últimos tiempos, al punto de que tener un costo lineal por obtener un valor es extremadamente raro. En la sección benchmarks realizamos pruebas para mostrar que nuestros algoritmos se comportan de forma adecuada a la complejidad asintótica que poseen cuando son implementados con un array bi-dimensional, viendo asi que efectivamente acceder a una posición de la matriz es practicamente O(1). Por último cabe destacar que al momento de impolementar esta estructura utilizamos un vector de punteros a hash_maps, para poder swapear filas en tiempo constante.
+
+\subsection{Algoritmos desarrollados}
+
+Para resolver el sistema planteado por la matriz de colley implementamos dos algoritmos: Eliminacion Gaussiana y Factorización de Cholesky. También desarrollamos un algoritmo que calcula el porcentaje de partidos ganados de cada equipo. 
+
+\subsubsection{Gaussian Elimination}
+
+El algoritmo de eliminación gaussiana parte de una matriz A que representa un sistema de ecuaciones lineales, a esta le aplica operaciones de filas para llevarla a un sistema triangular superior, el cual puede ser resuelto facilmente utilizando backward substitution. Para lograr esto primero le resta la fila 1 multiplicada por un numero $k_i$ a todas las otras i filas que se encuentran debajo. $k_i$ va a ser el numero que haga que después de la resta, en la posición (i,1) haya un cero. Luego de i iteraciones, debajo de la posición (1,1) va a haber todos ceros. Este proceso debe repetirse con las i filas restantes, cada una logrando que en la columna i, debajo de la posición (i,i) haya solo 0s. En una matriz cuadrada de dimensión n, el algoritmo blanquea n columnas, cada una teniendo que hacer n restas de filas. Como cada resta entre filas tiene un costo computacional lineal, el algoritmo termina teniendo una complejidad asintótica de $O(n^3)$. Cabe destacar que si a una fila $L_i$ le restamos un multiplo de otra fila $L_k$, las columnas en donde $L_k$ tiene ceros no se van a ver afectadas en $L_i$. Por lo tanto como usamos hash_maps para representar las filas, en cada resta podemos iterar solo sobre los elementos que se van a ver afectados. Debajo dejamos el pseudocódigo del algoritmo implementado.
+
+\begin{codesnippet}
+Gaussian Elimination$(A^{n*m})$:\\
+\tab Para i de 1 hasta Min(n, m)\\
+\tab \tab Para j de i+1 hasta n\\
+\tab \tab pivot = $A_{ji}/A_{ii}$\\
+\tab \tab \tab Para k de i+1 hasta m\\
+\tab \tab \tab \tab $A_{jk} = A_{jk}-A_{ik}$*pivot\\
+
+\end{codesnippet}
+
+\subsubsection{Cholesky Decomposition}
+
+La factorización de cholesky es un algoritmo solo aplicable a matrices simétricas definidas positivas, suele ser mas eficiente que la eliminación gaussiana. Nostros lo pensamos a partir de lo siguiente: Sea A una martriz simetrica definida positiva de dimensión n, sabemos que esto vale:
+
+\includegraphics{img/chol.png}
+
+Siendo $a_{11}$ el elemento de la posición (1,1) de A, $A_{21}$ una matriz de (n-1)*1, y $A_{22}$ una matriz de (n-1)*(n-1). Por lo tanto podemos desarrollar el siguiente algoritmo recursivo:
+
+\begin{codesnippet}
+
+    $Cholesky(A^{n*n})$:\\
+    \tab $l_{11} =  \sqrt[2]{a_{11}}$ \\
+    \tab $si$ $n > 1$ \\
+    \tab \tab $L_{21} =  A_{21}/l_{11}$ \\
+    \tab \tab $L_{22} =  Cholesky(A_{22}-L_{21}$*$L_{21}^{T})$ \\
+\end{codesnippet}
+
+Como se efectúan n llamados recursivos, y en cada uno se hace una resta de matrices, la complejidad asintótica total del algoritmo es $O(n^3)$. A la hora de implementarlo eliminamos la recursión, reemplazandola por un approach iterativo, que es más eficiente. Por lo tanto el algoritmo final quedó así:
+
+\begin{codesnippet}
+    $Cholesky(A^{n*n})$:\\
+    \tab Para i de 1 hasta n: \\
+    \tab \tab $A_{ii} = \sqrt[2]{A_{ii}}$ \\
+    \tab \tab Para j de i+1 hasta n: \\
+    \tab \tab \tab $A_{ij} = A_{ij}/A_{ii}$ \\
+    \tab \tab Para j de i+1 hasta n: \\
+    \tab \tab \tab Para k de i+1 hasta j: \\
+    \tab \tab \tab \tab $A_{jk} = A_{ji}*A_{ki}$ \\
+\end{codesnippet}
+
+En la implementación, el codigo solo necesita la parte triangular inferior de la matriz para funcionar, utilizando asi, la mitad de espacio. Por último cabe destacar que si bien la factorización de Cholesky hace menos operaciones que la de Gauss, n operaciones son raices cuadradas, que computacionalmente son mucho mas caras que sumas y restas. Por lo tanto implementamos una funcion en assembler que calcula la operación sqrt(double) por hardware. Si bien la ganancia en performance no es tanta (aprox 3$\%$), decidimos dejarla porque nos pareció un factor que esta bueno tenerlo controlado para los benchmarks.
+
+\begin{codesnippet}
+\end{codesnippet}
+
+\subsection{Benchmarks}
+
+\subsubsection{Performance y complejidades}
+
+ En esta sección evaluaremos los algoritmos en el peor caso, esto es, en matrices con pocos ceros. Los "fixtures" que le dan valores a la matriz de Colley fueron generados al azar, pero siempre controlando que el $\%$ de ceros no baje del $\%$90.
+ Primero veamos un grafico que compara la performance de los 3 algoritmos desarrollados:
+ 
+ \includegraphics[scale=0.8]{img/testciclos.png}
+ 
+ Como era de esperarse, winning percentage es notablemente mas rápido (tanto que aparece pegado al eje x), ya que tiene una complejidad lineal, mientras que los otros cubica. Lo segundo que vamos a apreciar es que a partir de 700 equipos las mediciones se vuelven bastante mas inestables. Esto se debe a 2 factores: El mas importante es que como utilizamos hash_maps y generamos tests al azar, es de esperarse que el tiempo de acceso a un valor del diccionario no sea completamente uniforme en todos los casos. Por otro lado, nosotros calculamos los tiempos de cómputo directamente del procesador, por lo tanto, como cada medición es extremadamente precisa, es normal que haya varianza entre mediciones. Cabe destacar además, que para n$<$500 también hay variaciones de aprox $\%10$, pero no se aprecian por la escala del gráfico.
+ Por último podemos ver que cholesky tarda menos en computarse que gaussian elimination, pero cuánto más?, veamos en el siguiente grafico que divide la cantidad de ciclos de Gaussian por la de Cholesky:
+ 
+ \includegraphics[scale=0.7]{img/gaussianvscholesky.png}
+ 
+ Increiblemente, para sistemas densos con pocos equipos Cholesky es hasta 3.5 veces mas rápido. Hasta aprox 350 equipos se mantiene 3 veces más rápido, luego la diferencia se achica rápidamente, y ya para 420 equipos en adelante se estabiliza en el doble de rápido. Por la inestabilidad debatida antes, el gráfico presenta "anchura". Cabe destacar, que aunque haya habido algunos outliers, nunca en las mil corridas realizadas Cholesky fue más lento que Gaussian.
+ 
+ Veamos ahora si los algoritmos se comportan de acuerdo a su complejidad asintótica. El primer gráfico de la página siguiente muestra la performance de Gaussian Elimination, dividida por $n^2$, $n^3$ y $n^4$. Esto nos da una idea de su crecimiento asintótico para situaciones con hasta 1000 equipos. Esta cota nos pareció mas que suficiente para analizar el comportamiento que tendría en situaciones reales.
+ 
+ \includegraphics[scale=0.7]{img/complejidadgaussian.png}
+ 
+ Al ver que dividiendo por $n^2$ diverge claramente, y que dividiendo por $n^4$ y $n^3$ la curva queda completamente pegada al eje x, podemos concluir que la complejidad debería ser $O(n^3)$. En el siguiente gráfico probamos dividiendo por $n^3$ con diferentes constantes.
+ 
+  \includegraphics[scale=0.7]{img/constantegaussian.png}
+ 
+ Si bien por el gráfico anterior pensamos que las constantes iban a ser menores a 1, podemos ver que incluso con c$=$1 la curva crece lentamente. Sin embargo, para c=5 la curva que practicamente estable.
+ Por lo tanto podemos concluir que el algoritmo para n $\leq$ 1000 tiene un crecimiento asintótico de $O(n^3)$ con una constante un poquito mayor a 5.
+
+ Veamos ahora la complejidad de Cholesky para matrices densas:
+ 
+  \includegraphics[scale=0.7]{img/complejidadcholesky.png}
+  
+ Observamos el mismo panorama que para Gauss, vayamos al analisis de constante:
+ 
+  \includegraphics[scale=0.7]{img/constantecholesky.png}
+  
+ Antes vimos que cholesky es aproximadamente el doble de rápido, gracias a dios la lógica entre experimentos se mantiene, y obtenemos que la constante del algoritmo es un poquitito mas de 2.5, es decir, la mitad que la constante de Gaussian Elimination.
+ 
+ Por último veamos la performance de los algoritmos, dada una cierta cantidad de equipos fija, pero variando la cantidad de ceros en la matriz. En el siguiente gráfico se muestra la cantidad de ciclos consumida por ambos algoritmos con n fijado en 700 y variando la densidad de la matriz:
+ 
+\includegraphics[scale=0.7]{img/testsparse.png}
+ 
+Claramente se ve que hay una diferencia de performance para distintos niveles de densidad de la matriz, sobretodo para Gaussian Elimination. También podemos notar que la brecha de velocidad entre ambos algoritmos se va achicando a medida que la matriz es mas esparsa, e incluso termina con Cholesky siendo mas lento. Por todo todo esto decidimos hacer la siguiente sección 
+ 
+\subsubsection{Matrices esparsas}
+
+Pasemos ahora a ver el comportamiento en matrices esparsas. Primero veamos la diferencia de performance entre Gaussian Elimination y Cholesky con 700 equipos y variando el porcentaje de ceros.
+
+ \includegraphics[scale=0.7]{img/sparsegaussianvscholesky.png}
+ 
+ Como venimos viendo, Gauss se beneficia más por la presencia de muchos ceros en la matriz, en este caso vemos que en matrices esparsas por lo general Cholesky sigue siendo mas rápido, pero ahora entre 1.5 y 2 veces mas rápido. También podemos observar que para matrices muy muy esparsas, o sea con 98$\%$ ceros o más, Gaussian Elimination pasa a ser más rápido que Cholesky. Como ya mencionamos antes, la notable mejora es porque las restas entre filas se hacen iterando solo sobre números distintos a cero.
+ 
+ Ahora vamos a ver si las complejidades asintóticas cambian. Primero pensamos en dejar una cantidad de números distinta a cero fija y variar la cantidad de equipos. El problema con este experimento es que después de cierto punto significaría agregar equipos que juegan 0 partidos, y este escenario es demasiado irreal. Por lo tanto optamos por dejar fijo el $\%$ de ceros de la matriz e ir subiendo la cantidad de equipos. En el siguiente gráfico se muestra la performance de los algoritmos en matrices con 90$\%$ ceros:
+ 
+ \includegraphics[scale=0.7]{img/testfixedsparse.png}
+
+ Lo primero que no puede ver es que los algoritmos son muchisimo mas estables, es decir, que no hay mucha varianza en los tiempo de medición. Esto tiene sentido, ya que muchos ceros en la matriz implica pocos elementos en los hash_maps, y por lo tanto tiempos de acceso constantes. Lo segundo que vamos a remarcar es que bajó un orden de magnitud con respecto a la performance de matrices densas, es decir, los algoritmos llegan a ser hasta 10 veces mas rápidos en matrices esparsas. Veamos como queda la complejidad asintótica de cada uno, la primer imagen corresponde a Gaussian elimination y la segunda a Cholesky:
+ 
+\includegraphics[scale=0.7]{img/complejidadfixedgaussian.png}
+  
+\includegraphics[scale=0.7]{img/complejidadfixedcholesky.png}
+
+Lamentablemente incluso teniendo 90$\%$ de ceros, los algoritmos siguen siendo cúbicos. Sin embargo como vamos a ver en los siguientes gráficos, primero para Gaussian y luego con Cholesky, las constantes sí son mejores.
+
+\includegraphics[scale=0.7]{img/constantefixedgaussian.png}
+  
+\includegraphics[scale=0.7]{img/constantefixedcholesky.png}
+
+Para matrices densas las constantes eran 5 para Gaussian y 2.5 para cholesky, en este caso bajaron a 2.5 y 2.
+
+Por lo tanto podemos concluir que la estructura planteada es una muy buena elección para matrices esparsas, ya que ademas de poder ahorrar mucho espacio tiene una buena performance, logrando resolver sistemas de 1000 equipos en segundos. Por otro lado, para casos densos no es una buena idea, ya que la cantidad de espacio consumida es la misma y los tiempos de acceso a los hash_maps se vuelven lentos. Es por esto que convendría hacer una heurística analizando datos estadísticos que en base a la cantidad de equipos del sistema a resolver, y al nivel de densidad de la matriz, decida si utilizar un simple array bi-dimensional o la estructura analizada en esta sección.
+
