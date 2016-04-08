@@ -16,11 +16,13 @@ La justificación de que la asunción se cumple viene dada por el hecho de que l
 
 \end{itemize}
 
-Si es única, debe ser la factorización obtenida por el algoritmo de elimincación Gaussiana, dado que esta tiene 1s en su diagonal.
+Si es única, debe ser la factorización obtenida por el algoritmo de elimincación Gaussiana por motivos constructivos, dado que esta tiene 1s en su diagonal.
 
-Propiedad: Sea \(A \in \mathbb{R}^{n \times n}\) Simétrica Definida Positiva \(\implies A\) No singular.
+\vspace{1em}
 
-Demostración: Queremos ver que $A$ es No Singular y que todas las submatrices principales de $A$ son No Singulares
+Propiedad: Sea \(A \in \mathbb{R}^{n \times n}\) Simétrica Definida Positiva \(\implies A\) No singular $land$ todas las submatrices principales de $A$ No singulares.
+
+Demostración: Por absurdo:
 
 \begin{itemize}
 
@@ -35,7 +37,7 @@ Luego $A$ es No Singular
 
 \item Sea $A_{k}$ la submatriz principal $\mathbb{R}^{k\times k}$ de $A \in \mathbb{R}^{n \times n}$
 
-Supongo que $A_{k}$ es singular (No inversible)
+Supongo que $A_{k}$ es singular (No inversible) $\implies \exists \bar{x_k}$ tq $A_k \bar{x_k} = 0$ con $\bar{x_k} \neq 0$
 
 \[\text{Sea } \bar{x_{k}} \in \mathbb{R}^{k} \text{tq } A_{k} \bar{x_{k}} = 0  \land \bar{x_{k}} \neq 0 \]
 
@@ -58,8 +60,12 @@ Supongo que $A_{k}$ es singular (No inversible)
     \end{block}
   \end{blockarray}
   \begin{pmatrix} \bar{x_{k}} \\ 0 \\ \vdots \\ 0 \end{pmatrix} =
-  \begin{pmatrix} \bar{x_{k}} & 0 & \cdots & 0 \end{pmatrix}   \ \begin{pmatrix} 0 \\ \vdots \\ 0 \\ * \\ \vdots \\ * \end{pmatrix} = 0
+  \begin{pmatrix} \bar{x_{k}} & 0 & \cdots & 0 \end{pmatrix}   \  \underbrace{\begin{pmatrix} 0 \\ \vdots \\ 0 \\ * \\ \vdots \\ * \end{pmatrix}}_{A \bar{x}} = 0
 \end{equation}
+Los primeros $k$ elementos del vector $A \bar{x}$ son iguales a $0$ dado que haciendo el producto por bloques de $A$ con $\bar{x}$ por cada fila de $A$ las $n-k$ ultimas columnas se anulan al ser multiplicadas por los $n-k$ ultimos ceros de $\bar{x}$ y el primer bloque de dimension $k \times 1$ del vector resultado ( $ = A_k \bar{x_{k}} )$ es cero por hipótesis.
+
+El producto $\bar{x}^{T} (A \bar{x} )$ es igual a cero dado que los primeros $k$ elementos de $\bar{x}^{T}$ son multiplicados por los primeros $k$ ceros del producto $A \bar{x}$ y los $n-k$ ceros de $\bar{x}^{T}$ anulan los $n-k$ ultimos elementos de $A \bar{x}$
+
 \[\text{Abs! pues } A \text{es SDP y } \bar{x} = \begin{pmatrix} \bar{x_{k}} \\ 0 \\ \vdots \\ 0 \end{pmatrix} \neq 0\]
 
 O sea toda $A \in \mathbb{R}^{n \times n}$ SDP tiene todas sus submatrices principales no singulares y $A$ es no singular \qed
@@ -81,7 +87,11 @@ Demostración: (x inducción)
 	
 	Al ser $a_{1,1} \neq 0$ puedo aplicar el algoritmo EG sobre $A$
 	\[F_2 - \frac{a_{2,1}}{a_{1,1}} F_1 \]
-	Con esto consigo una factorización $LU$: $A = LU$.
+	Con esto consigo una factorización $LU$: $A = LU$ de la forma usual (algoritmo EG)
+	
+	\[ L = \begin{pmatrix} 1 & 0 \\ \frac{a_{2,1}}{a_{1,1}} & 1 \end{pmatrix} \hspace{3em}
+	U = \begin{pmatrix} a_{1,1} & a_{1,2} \\ 0 & a_{2,2} - \frac{a_{2,1}}{a_{1,1}} a_{1,2} \end{pmatrix}
+	\] 
 	
 	Luego para el caso base $n = 2$ se verifica la tésis.
 	
@@ -166,15 +176,30 @@ Demostración: (x inducción)
   
   Resolviendo Por bloques tenemos:
   
-  \[ L^{(n)} U^{(n)} = A^{(n)} \]
-  \[ L^{(n)} u_{n+1} = c_{n+1} \]
-  \[ f_{n+1} = l_{n+1} + U^{(n)} \]
-  \[ l_{(n+1)} u_{(n+1)} + u_{(n+1)(n+1)} = a_{(n+1)(n+1)} \]
+  \begin{equation} \label{demo:Block1}
+  	L^{(n)} U^{(n)} = A^{(n)} 
+  \end{equation} 
+  \begin{equation} \label{demo:Block2}
+	L^{(n)} u_{n+1} = c_{n+1} 
+  \end{equation}
+  \begin{equation} \label{demo:Block3}
+	f_{n+1} = l_{n+1} + U^{(n)}
+  \end{equation}
+  \begin{equation} \label{demo:Block4}
+	l_{(n+1)} u_{(n+1)} + u_{(n+1)(n+1)} = a_{(n+1)(n+1)}
+  \end{equation}
+  
+  Para poder armar constructivamente $L$ y $U$ necesitamos a partir de esto obtener los bloques $u_{n+1} \in \mathbb{R}^{n \times 1}$ , $l_{n+1} \in \mathbb{R}^{1 \times n}$ y $u_{(n+1)(n+1)} \in \mathbb{R}^{1 \times 1}$.
+  
+  Como $L^{(n)}$ en (\ref{demo:Block2}) es triangular inferior no singular (por hipotesis), $u_{n+1}$ puede resolverse facilmente. Asimismo en (\ref{demo:Block3}) $U^{(n)}$ es triangular superior inversible (por hipotesis) y $f_{n+1}$ tambien queda determinado.
+  
+	Finalmente en (\ref{demo:Block4}) $u_{(n+1)(n+1)}$ queda determinado resolviendo un producto de matrices y despejando con lo que conseguimos $L$ y $U$ tales que $A = L U$ siempre que tanto $A \in \mathbb{R}^{n \times n}$ como sus submatrices principales sean no inversibles $\forall n \in \mathbb{N}$
 \qed
 
 \end{itemize}
 
-Ya demostramos que por ser $A$ SDP, $A$ tiene factorizacion LU, ademas demostramos que tanto $A$ como todas sus submatrices principales son inversibles. Nos falta demostrar que esta factorizacion es unica bajo ciertas condiciones.
+Ya demostramos que por ser $A$ SDP, tanto $A$ como todas sus submatrices principales son inversibles, luego $A$ tiene factorizacion $LU$. Nos falta demostrar que esta factorizacion es unica bajo ciertas condiciones.
+
 Queremos llegar a que la matriz de Colley admite el metodo EG, sabemos que el algoritmo nos obtiene dos matrices $L$ y $U$ donde $L$ es una matriz triangular inferior con unos en la diagonal y $U$ es una matriz triangular superior.
 Intentemos probar que si $A$ es No Singular (inversible), con factorizacion $A = LU$ y exigimos que $L$ tenga unos en la diagonal, bajo estas condiciones la factorizacion $LU$ es unica.
 
@@ -185,15 +210,72 @@ Hipotesis:
 	\item $L$ es una matriz triangular inferior con unos en la diagonal
 	\item $L'$ es una matriz triangular inferior con unos en la diagonal
 	
-	\[ A = LU = L'U' \]
-	\[U = L^{-1} L' U' \]
-	\[ \underbrace{U U'^{-1}}_{\text{triangulares superiores}} = \underbrace{L^{-1} L'}_{\text{triangulares inferiores}} = D \]
-	\[ L' = L D \]
-	luego 
-	\[ D = I \]
-	\[ L^{-1} L' = I \]
-	\[ L = L'\]
-	\[ U = U' \]
+	\begin{equation} \label{demo2:1}
+	A = LU = L'U'
+	\end{equation}
+
+	Premultiplicando a ambos lados por $L^{-1}$
+	\begin{equation} \label{demo2:2}
+		U = L^{-1} L' U'
+	\end{equation}
+	Post-multiplicando a ambos lados por $U'^{-1}$
+	\begin{equation} \label{demo2:3}
+		\underbrace{U U'^{-1}}_{\text{t.s}} = \underbrace{L^{-1} L'}_{\text{t.i.}} = D
+	\end{equation}
+	La única manera que una matriz triangular inferior sea igual a una matriz diagonal superior es que la matriz sea diagonal (producto de matrices t.i es t.i, producto de matrices t.s es t.s.).
+	Luego resolviendo una de las igualdades (pre-multiplicando por la matriz necesaria) tenemos:
+	\begin{equation} \label{demo2:4}
+		L' = L D
+	\end{equation}
+	Observando el producto de matrices
+	\begin{equation} \label{demo2:5}
+	\underbrace{
+		\left(
+		\begin{array}{ccccc}
+		1 \\
+		& 1 & &\textbf{\huge0}\\
+		& & \ddots \\
+		& \text{\huge $l'$} & & \\
+		& & & & 1
+		\end{array}
+		\right)
+	}_{\textbf{\huge $L'$}}
+		=
+	\underbrace{
+		\left(
+		\begin{array}{ccccc}
+		1 \\
+		& 1 & &\textbf{\huge0}\\
+		& & \ddots \\
+		& \text{\huge $l$} & & \\
+		& & & & 1
+		\end{array}
+		\right)
+	}_{\textbf{\huge $L$}}
+	\underbrace{
+		\left(
+		\begin{array}{ccccc}
+		d_{11} \\
+		& d_{22} & & \textbf{\huge0} \\
+		& & \ddots \\
+		& \textbf{\huge0}\\
+		& & & & d_{nn}
+		\end{array}
+		\right)
+		}_{\textbf{\huge $D$}}
+	\end{equation}
+	El producto de $L$ por $D$ es una matriz diagonal y está igualada a una t.i con unos en la diagonal, luego $D = I$, luego reemplazando $D$ en (\ref{demo2:3})
+%	\[ D = I \]
+\begin{equation} \label{demo2:6}
+	L^{-1} L' = I \hspace{2em} \land \hspace{2em} U U'^{-1} = I
+\end{equation}
+	Con lo cual pre-multiplicando ambos miembros por $L$ en la primera y post-multiplicando por $U'$ en la segunda:
+\begin{equation}
+	 L' = L  \hspace{2em} \land \hspace{2em} U = U'
+\end{equation}
+
+Luego la factorizacion $LU$ tal que $L$ tenga unos en su diagonal es unica.
+
 \qed
 \end{itemize}
 
