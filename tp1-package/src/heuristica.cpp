@@ -40,7 +40,7 @@ vector<vector<int>> levantarInput(const string& arch) {
 
     for(int i = 0; i<k; ++i) {
         int a, b, c, d, e;
-        cin >> a >> b >> c >> d >> e;
+        in >> a >> b >> c >> d >> e;
         ret.push_back({a, b, c, d, e});
     }
 
@@ -53,10 +53,10 @@ void pisarInput(const string& arch, const vector<vector<int>>& mem) {
 
     for(const vector<int>& linea : mem) {
         for(int i = 0; i<linea.size(); ++i) {
-            if (i) cout << " ";
-            cout << linea[i];
+            if (i) out << " ";
+            out << linea[i];
         }
-        cout << endl;
+        out << endl;
     }
     out.close();
 }
@@ -81,8 +81,11 @@ int main(int argc, char * argv[]){
     for (int p = 0; p<partidos; ++p) {
         string correr = "./TP1 " + inputPath + " " + TEMP_ARCH + " 1";
         system(correr.c_str());
-        vector<pair<double, int> > ranking = leerRankings(inputPath);
-
+        vector<pair<double, int> > ranking = leerRankings(TEMP_ARCH);
+        // si soy el primer equipo no juego mas partidos
+        if (ranking[0].second == equipo) {
+            continue;
+        }
         vector<vector<int>> inputmem = levantarInput(inputPath);
         // Sumo 1 a K: cantidad de partidos
         inputmem[0][1]++;
