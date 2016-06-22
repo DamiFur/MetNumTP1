@@ -152,8 +152,8 @@ unsigned long long int matriz::choleskyDecomposition(){
     unsigned long long int t1 = rdtsc();
     for (int i = 0; i < this->filas(); ++i)
     {
-        double diag = asmsqrt(&this->fila[i][i]);
-        //double diag = sqrt(this->fila[i][i]);
+        //double diag = asmsqrt(&this->fila[i][i]);
+        double diag = sqrt(this->fila[i][i]);
         this->fila[i][i] = diag;
         for (int j = i+1; j < this->filas(); ++j)
             this->fila[j][i] /= diag;
