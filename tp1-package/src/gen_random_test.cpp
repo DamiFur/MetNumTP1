@@ -4,13 +4,13 @@
 #include <algorithm>
 using namespace std;
 
-const int N = 15;
-const int K = 30;
+const int N = 30;
+const int K = 500;
 const int MAX_GOLES_A = 40;
 const int MAX_GOLES_B = 40;
 
 int main(int argc, char * argv[]){
-    freopen("random_test.in", "w", stdout);
+    freopen("test_heuristica.in", "w", stdout);
     printf("%i %i\n", N, K);
 
     srand(time(NULL));
