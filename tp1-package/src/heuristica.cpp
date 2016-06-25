@@ -7,13 +7,17 @@ using namespace std;
 
 const string TEMP_ARCH = "heuristica-temp.out";
 
-vector<pair<double, int> > leerRankings(const string& arch) {
+vector<pair<double, int> > leerRankings(const string& arch, const string& calendario) {
     ifstream in; in.open(arch);
     vector<pair<double, int> > ret;
     double ranking;
     int i = 1;
     while(in >> ranking) {
-        ret.push_back(make_pair(ranking, i++));
+        // Tiene que poder jugar contra ese equipo o simplemente soy "yo"
+        if (calendario[i] > '0' || i+1 == calendario.size()) {
+            ret.push_back(make_pair(ranking, i));
+        }
+        i++;
     }
 
     in.close();
@@ -64,33 +68,43 @@ void pisarInput(const string& arch, const vector<vector<int>>& mem) {
 int main(int argc, char * argv[]){
 
     string inputPath, outputPath; 
-    int partidos; 
+    string calendario; 
     if (argc < 3){ 
         cout << "Input: ";
         cin >> inputPath;
-        cout << "Partidos: ";
-        cin >> partidos;
+        cout << "Calendario: ";
+        cin >> calendario;
     } else {
         inputPath = argv[1];
-        partidos = atoi(argv[2]);
+        calendario = argv[2];
     }
 
-    // nuestro equipo es el N siempre
+    // nuestro equipo es el N siempre que no debe tener ningun otro partido
     int equipo = leerCantEquipos(inputPath);
+    int partidos = 0;
+    for (char c : calendario) {
+        partidos += c - '0';
+    }
 
     for (int p = 0; p<partidos; ++p) {
         string correr = "./TP1 " + inputPath + " " + TEMP_ARCH + " 1";
         system(correr.c_str());
-        vector<pair<double, int> > ranking = leerRankings(TEMP_ARCH);
-        // si soy el primer equipo no juego mas partidos
-        if (ranking[0].second == equipo) {
-            continue;
-        }
+        vector<pair<double, int> > ranking = leerRankings(TEMP_ARCH, calendario);
+        // levanto input
         vector<vector<int>> inputmem = levantarInput(inputPath);
         // Sumo 1 a K: cantidad de partidos
         inputmem[0][1]++;
-        // Juego contra el mejor y le gano
-        inputmem.push_back({0, equipo, 1, ranking[0].second, 0});
+        // si soy el primer equipo, pierdo contra el ultimo
+        if (ranking[0].second == equipo) {
+            int oponente = ranking[ranking.size()-1].second;
+            // Juego contra el "peor" y pierdo
+            inputmem.push_back({0, equipo, 0, oponente, 1})
+            calendario[oponente]--;
+        } else {
+            // Juego contra el mejor y le gano
+            inputmem.push_back({0, equipo, 1, ranking[0].second, 0});
+            calendario[ranking[0].second]--;
+        }
         // Piso el input
         pisarInput(inputPath, inputmem);
     }
