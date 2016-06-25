@@ -4,8 +4,8 @@
 #include <algorithm>
 using namespace std;
 
-const int N = 30;
-const int K = 500;
+const int N = 40;
+const int K = 2000;
 const int MAX_GOLES_A = 40;
 const int MAX_GOLES_B = 40;
 
@@ -17,8 +17,8 @@ int main(int argc, char * argv[]){
     for (int k = 0; k<K; ++k) {
         int equipA, equipB;
         do {
-            equipA = rand()%N + 1;
-            equipB = rand()%N + 1;
+            equipA = rand()%(N-1) + 1;
+            equipB = rand()%(N-1) + 1;
         } while (equipA == equipB);
 
         int golesA = rand()%MAX_GOLES_A + 1, golesB = rand()%MAX_GOLES_B + 1;
