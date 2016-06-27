@@ -7,14 +7,14 @@ using namespace std;
 
 const string TEMP_ARCH = "heuristica-temp.out";
 
-vector<pair<double, int> > leerRankings(const string& arch, const string& calendario) {
+vector<pair<double, int> > leerRankings(const string& arch, const string& calendario, int equipo) {
     ifstream in; in.open(arch);
     vector<pair<double, int> > ret;
     double ranking;
     int i = 1;
     while(in >> ranking) {
         // Tiene que poder jugar contra ese equipo o simplemente soy "yo"
-        if (calendario[i] > '0' || i+1 == calendario.size()) {
+        if (calendario[i] > '0' || i == equipo) {
             ret.push_back(make_pair(ranking, i));
         }
         i++;
@@ -69,18 +69,20 @@ int main(int argc, char * argv[]){
 
     string inputPath, outputPath; 
     string calendario; 
-    if (argc < 3){ 
+    int equipo;
+    if (argc < 4){ 
         cout << "Input: ";
         cin >> inputPath;
         cout << "Calendario: ";
         cin >> calendario;
+        cout << "Equipo: ";
+        cin >> equipo;
     } else {
         inputPath = argv[1];
         calendario = argv[2];
+        equipo = argv[3];
     }
 
-    // nuestro equipo es el N siempre que no debe tener ningun otro partido
-    int equipo = leerCantEquipos(inputPath);
     int partidos = 0;
     for (char c : calendario) {
         partidos += c - '0';
@@ -89,7 +91,7 @@ int main(int argc, char * argv[]){
     for (int p = 0; p<partidos; ++p) {
         string correr = "./TP1 " + inputPath + " " + TEMP_ARCH + " 1";
         system(correr.c_str());
-        vector<pair<double, int> > ranking = leerRankings(TEMP_ARCH, calendario);
+        vector<pair<double, int> > ranking = leerRankings(TEMP_ARCH, calendario, equipo);
         // levanto input
         vector<vector<int>> inputmem = levantarInput(inputPath);
         // Sumo 1 a K: cantidad de partidos
