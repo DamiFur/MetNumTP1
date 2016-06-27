@@ -52,6 +52,31 @@ vector<vector<int>> levantarInput(const string& arch) {
     return ret;
 }
 
+string filtrarPartidosEquipo(vector<vector<int>>& partidos, int equipo, int cantEquipos) {
+    // Elimina todos los partidos del equipo y devuelve el "calendario"
+    string calendario(cantEquipos, '0');
+
+    for (int i = 1; i<partidos.size(); ++i) {
+        if (partidos[i][1] == equipo) {
+            // sumo al calendario
+            calendario[partidos[i][3]]++;
+            // borro el resultado
+            partidos.erase(partidos.begin()+i);
+            // resto uno a la cantidad de partidos
+            partidos[0][1]--;
+            // muevo i porque el elemento no existe mas
+            --i;
+        } else if (partidos[i][3] == equipo) {
+            calendario[partidos[i][1]]++;
+            partidos.erase(partidos.begin()+i);
+            partidos[0][1]--;
+            --i;
+        }
+    }
+
+    return calendario;
+}
+
 void pisarInput(const string& arch, const vector<vector<int>>& mem) {
     ofstream out; out.open(arch);
 
@@ -68,21 +93,27 @@ void pisarInput(const string& arch, const vector<vector<int>>& mem) {
 int main(int argc, char * argv[]){
 
     string inputPath, outputPath; 
-    string calendario; 
-    int equipo;
+    int equipo, cantEquipos;
     if (argc < 4){ 
         cout << "Input: ";
         cin >> inputPath;
-        cout << "Calendario: ";
-        cin >> calendario;
         cout << "Equipo: ";
         cin >> equipo;
+        cout << "Cantidad de equipos: ";
+        cin >> cantEquipos;
     } else {
         inputPath = argv[1];
-        calendario = argv[2];
-        equipo = argv[3];
+        equipo = atoi(argv[2]);
+        cantEquipos = atoi(argv[3]);
     }
 
+    // Limpio el input de los partidos del equipo
+    vector<vector<int>> inputmem;
+    inputmem = levantarInput(inputPath);
+    string calendario = filtrarPartidosEquipo(inputmem, equipo, cantEquipos);
+    pisarInput(inputPath, inputmem);
+
+    // veo cuantos partidos juego yo
     int partidos = 0;
     for (char c : calendario) {
         partidos += c - '0';
@@ -93,14 +124,14 @@ int main(int argc, char * argv[]){
         system(correr.c_str());
         vector<pair<double, int> > ranking = leerRankings(TEMP_ARCH, calendario, equipo);
         // levanto input
-        vector<vector<int>> inputmem = levantarInput(inputPath);
+        inputmem = levantarInput(inputPath);
         // Sumo 1 a K: cantidad de partidos
         inputmem[0][1]++;
         // si soy el primer equipo, pierdo contra el ultimo
         if (ranking[0].second == equipo) {
             int oponente = ranking[ranking.size()-1].second;
             // Juego contra el "peor" y pierdo
-            inputmem.push_back({0, equipo, 0, oponente, 1})
+            inputmem.push_back({0, equipo, 0, oponente, 1});
             calendario[oponente]--;
         } else {
             // Juego contra el mejor y le gano
