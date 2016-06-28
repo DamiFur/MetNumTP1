@@ -25,14 +25,6 @@ vector<pair<double, int> > leerRankings(const string& arch, const string& calend
     return ret;
 }
 
-int leerCantEquipos(const string& arch) {
-    ifstream in; in.open(arch);
-    int ret;
-    in >> ret;
-    in.close();
-    return ret;
-}
-
 vector<vector<int>> levantarInput(const string& arch) {
     vector<vector<int>> ret;
 
@@ -54,10 +46,13 @@ vector<vector<int>> levantarInput(const string& arch) {
 
 string filtrarPartidosEquipo(vector<vector<int>>& partidos, int equipo, int cantEquipos) {
     // Elimina todos los partidos del equipo y devuelve el "calendario"
-    string calendario(cantEquipos, '0');
-
+    string calendario(cantEquipos+1, '0');
+    int ganados = 0, cantPartidos = 0;
     for (int i = 1; i<partidos.size(); ++i) {
         if (partidos[i][1] == equipo) {
+            if (partidos[i][2] > partidos[i][4])
+                ganados++;
+            cantPartidos++;
             // sumo al calendario
             calendario[partidos[i][3]]++;
             // borro el resultado
@@ -67,12 +62,18 @@ string filtrarPartidosEquipo(vector<vector<int>>& partidos, int equipo, int cant
             // muevo i porque el elemento no existe mas
             --i;
         } else if (partidos[i][3] == equipo) {
+            if (partidos[i][2] < partidos[i][4])
+                ganados++;
+            cantPartidos++;
             calendario[partidos[i][1]]++;
             partidos.erase(partidos.begin()+i);
             partidos[0][1]--;
             --i;
         }
     }
+
+    cout << "Calendario: " << calendario << endl;
+    cout << "Ganados: " << ganados << "/" << cantPartidos << endl;
 
     return calendario;
 }
@@ -118,7 +119,7 @@ int main(int argc, char * argv[]){
     for (char c : calendario) {
         partidos += c - '0';
     }
-
+    int ganados = 0;
     for (int p = 0; p<partidos; ++p) {
         string correr = "./TP1 " + inputPath + " " + TEMP_ARCH + " 1";
         system(correr.c_str());
@@ -135,6 +136,7 @@ int main(int argc, char * argv[]){
             calendario[oponente]--;
         } else {
             // Juego contra el mejor y le gano
+            ganados++;
             inputmem.push_back({0, equipo, 1, ranking[0].second, 0});
             calendario[ranking[0].second]--;
         }
@@ -142,5 +144,6 @@ int main(int argc, char * argv[]){
         pisarInput(inputPath, inputmem);
     }
 
+    cout << "Ganados: " << ganados << "/" << partidos << endl;
     return 0;
 }
