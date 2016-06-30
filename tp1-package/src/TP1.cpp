@@ -109,7 +109,7 @@ int main(int argc, char * argv[]){
 	}else{
 		ciclos = wp(allTheGames, equipos, output);
 	}
-	cout << ciclos << endl;
+	//cout << ciclos << endl;
 	input.close();
 	output.close();
 	for (int i = 0; i < allTheGames.size(); ++i)
@@ -166,18 +166,41 @@ unsigned long long int wp(vector<int*> allTheGames, int cantEquipos, ofstream &o
 	unsigned long long int t1 = rdtsc();
 	vector<pair<double, double> > v;
 	v.reserve(cantEquipos+1);
-	for (int i = 0; i <= cantEquipos; ++i)
+	traductorIndiceEquipo.clear();
+	traductorEquipoIndice.clear();
+
+	for (int i = 0; i < cantEquipos; ++i)
 		v.push_back(make_pair(0, 0));
+	int indice = 0;
 	for (int i = 0; i < allTheGames.size(); ++i)
 	{
-		v[allTheGames[i][1]].second++;
-		v[allTheGames[i][3]].second++;
+		int i1 = allTheGames[i][1], i3 = allTheGames[i][3];
+		if (!traductorEquipoIndice.count(i1)) {
+			traductorEquipoIndice[i1] = indice;
+			traductorIndiceEquipo[indice++] = i1;
+		}
+		if (!traductorEquipoIndice.count(i3)) {
+			traductorEquipoIndice[i3] = indice;
+			traductorIndiceEquipo[indice++] = i3;
+		}
+		i1 = traductorEquipoIndice[i1];
+		i3 = traductorEquipoIndice[i3];
+		v[i1].second++;
+		v[i3].second++;
 		if(allTheGames[i][2]>allTheGames[i][4])
-			v[allTheGames[i][1]].first++;
+			v[i1].first++;
 		else
-			v[allTheGames[i][3]].first++;
+			v[i3].first++;
 	}
-	for (int i = 1; i <= cantEquipos; ++i)
-		out << v[i].first/v[i].second << endl; 
+	vector<pair<int, double> > ranking;
+	for (int i = 0; i < cantEquipos; ++i) {
+		ranking.push_back(make_pair(traductorIndiceEquipo[i], v[i].first / v[i].second));
+	}
+
+	sort(ranking.begin(), ranking.end());
+	for (int i = 0; i < cantEquipos; ++i) {
+		out << ranking[i].second << " " << ranking[i].first << endl;
+	}
+
 	return rdtsc()-t1;
 }
