@@ -6,10 +6,6 @@
  
 using namespace std;
 
-extern "C"{
-    extern double asmsqrt(double *x);
-}
-
 static __inline__ unsigned long long rdtsc(void)
 {
     unsigned hi, lo;

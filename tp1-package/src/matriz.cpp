@@ -7,30 +7,6 @@
  
 using namespace std;
 
-/*extern "C"{
-    extern double asmsqrt(double *x);
-}*/
-/*
-static __inline__ unsigned long long rdtsc(void)
-{
-    unsigned hi, lo;
-    __asm__ __volatile__ ("rdtsc" : "=a"(lo), "=d"(hi));
-    return ( (unsigned long long)lo)|( ((unsigned long long)hi)<<32 );
-}
-
-const int MAX_RESERVE_MATRIX = 1024;
- 
-struct pointer
-{
-    unordered_map<int, double> * col;
-    double &operator[](int i){
-        return (*col)[i];
-    }
-    bool count(int i) {
-        return col->count(i);
-    }
-}__attribute__((packed));
-*/ 
 matriz::~matriz(){ 
 	for (int i = 0; i < fila.size(); ++i) 
 	{ 
