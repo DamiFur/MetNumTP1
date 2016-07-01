@@ -199,7 +199,7 @@ unsigned long long int wp(vector<int*> allTheGames, int cantEquipos, ofstream &o
 
 	sort(ranking.begin(), ranking.end());
 	for (int i = 0; i < cantEquipos; ++i) {
-		out << ranking[i].second << " " << ranking[i].first << endl;
+		out << ranking[i].second << endl;
 	}
 
 	return rdtsc()-t1;
