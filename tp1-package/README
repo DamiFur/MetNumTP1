@@ -1,0 +1,9 @@
+Nuestro TP esta distribuido en las distintas carpetas de la siguiente manera:
+
+- benchgen: archivos utilizados para los benchmark (medir tiempo) de los métodos.
+- data: los archivos de datos provistas por la cátedra para realizar experimentos.
+- docs: los documentos provistos por la catedra para realizar el TP.
+- experimentos: carpeta con distintos archivos que fueron utilizados para los experimentos, como la
+heurística, el resultado completo de algunas corridas, archivos de entrada usados en algunos casos, etc.
+- src: el código de fuente principal del TP que consiste en recibir una entrada como fue definida por la
+cátedra, aplicar el metodo correspondiente y devolver el resultado en un archivo como define la cátedra.
