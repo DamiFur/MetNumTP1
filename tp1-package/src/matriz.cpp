@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <algorithm>
 #include "matriz.h"
+#include <cmath>
  
 using namespace std;
 
@@ -69,12 +70,6 @@ unsigned long long int matriz::gaussianElimination(){
     int iteraciones = min(this->columnas(), this->filas());
     for (int i = 0; i < iteraciones; ++i)
     {
-        int h = i;
-        while(h<this->filas() and !this->check(h, i))
-            h++;
-        if(h==this->filas())
-            continue;
-        this->swapFilas(h, i);
         for (int j = i+1; j < this->filas(); ++j)
         {
             if(!this->check(j, i))
@@ -99,12 +94,6 @@ unsigned long long int matriz::sparseGaussianElimination(){
     int iteraciones = min(this->columnas(), this->filas());
     for (int i = 0; i < iteraciones; ++i)
     {
-        int h = i;
-        while(h<this->filas() and !this->check(h, i))
-            h++;
-        if(h==this->filas())
-            continue;
-        this->swapFilas(h, i);
         for (int j = i+1; j < this->filas(); ++j)
         {
             if(!this->check(j, i))
